@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pemesanan Survey Kost - Solo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #FFF8F0;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+            padding: 20px 30px;
+            text-align: center;
+            color: #FFF8F0;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #FFF8F0;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 248, 240, 0.1);
+            transform: translateY(-50%) translateX(-3px);
+        }
+
+        .back-button svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 50px 40px;
+        }
+
+        .form-group {
+            margin-bottom: 28px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #8B7355;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .required {
+            color: #D2691E;
+            display: none;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #D2B48C;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+            color: #8B7355;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        input[type="date"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #A0826D;
+            box-shadow: 0 0 0 3px rgba(160, 130, 109, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .paket-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .paket-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .paket-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .paket-card {
+            padding: 20px;
+            border: 3px solid #D2B48C;
+            border-radius: 12px;
+            background: white;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .paket-option input[type="radio"]:checked + .paket-card {
+            border-color: #A0826D;
+            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+            color: #FFF8F0;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(160, 130, 109, 0.3);
+        }
+
+        .paket-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: inherit;
+        }
+
+        .paket-card .price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #D2691E;
+            margin-bottom: 8px;
+        }
+
+        .paket-option input[type="radio"]:checked + .paket-card .price {
+            color: #FFF8F0;
+        }
+
+        .paket-card .duration {
+            font-size: 13px;
+            opacity: 0.8;
+        }
+
+        .waktu-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+            color: #FFF8F0;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(139, 115, 85, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(139, 115, 85, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #F5DEB3 0%, #F0E6D2 100%);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #A0826D;
+            margin-bottom: 25px;
+        }
+
+        .info-box p {
+            color: #8B7355;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 600px) {
+            .paket-container,
+            .waktu-container {
+                grid-template-columns: 1fr;
+            }
+
+            .form-container {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .back-button {
+                left: 10px;
+                font-size: 14px;
+                padding: 6px;
+            }
+
+            .back-button svg {
+                width: 24px;
+                height: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="informasi-layanan.html" class="back-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+            </a>
+            <h1>Pemesanan Survey Kost</h1>
+        </div>
+
+        <div class="form-container">
+            <form id="surveyForm">
+                <div class="form-group">
+                    <label>Pilih Paket <span class="required">*</span></label>
+                    <div class="paket-container">
+                        <div class="paket-option">
+                            <input type="radio" id="regular" name="paket" value="regular" required>
+                            <label for="regular" class="paket-card">
+                                <h3>Regular</h3>
+                                <div class="price">Rp 50.000</div>
+                                <div class="duration">2-4 Hari</div>
+                            </label>
+                        </div>
+                        <div class="paket-option">
+                            <input type="radio" id="express" name="paket" value="express">
+                            <label for="express" class="paket-card">
+                                <h3>Express</h3>
+                                <div class="price">Rp 75.000</div>
+                                <div class="duration">1 Hari Jadi</div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="alamat">Alamat Kost <span class="required">*</span></label>
+                    <textarea id="alamat" name="alamat" placeholder="Masukkan alamat lengkap kost yang akan di-survey" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="jarak">Jarak dari Kantor (km) <span class="required">*</span></label>
+                    <input type="text" id="jarak" name="jarak" placeholder="Contoh: 5" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="whatsapp">No. WhatsApp Client <span class="required">*</span></label>
+                    <input type="tel" id="whatsapp" name="whatsapp" placeholder="08xxxxxxxxxx" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Jadwal Survey <span class="required">*</span></label>
+                    <div class="waktu-container">
+                        <div>
+                            <input type="date" id="tanggal" name="tanggal" required>
+                        </div>
+                        <div>
+                            <select id="waktu" name="waktu" required>
+                                <option value="">Pilih Waktu</option>
+                                <option value="08:00-10:00">08:00 - 10:00</option>
+                                <option value="10:00-12:00">10:00 - 12:00</option>
+                                <option value="13:00-15:00">13:00 - 15:00</option>
+                                <option value="15:00-17:00">15:00 - 17:00</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="catatan">Catatan Tambahan (Opsional)</label>
+                    <textarea id="catatan" name="catatan" placeholder="Informasi tambahan untuk surveyor"></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">Lanjut ke Pembayaran</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('surveyForm');
+        const tanggalInput = document.getElementById('tanggal');
+        
+        // Set minimum date to today
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const minDate = tomorrow.toISOString().split('T')[0];
+        tanggalInput.min = minDate;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Redirect to payment page
+            window.location.href = 'pembayaran.html';
+        });
+
+        // Format phone number input
+        document.getElementById('whatsapp').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            e.target.value = value;
+        });
+
+        // Format jarak input (only numbers and decimal)
+        document.getElementById('jarak').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/[^\d.]/g, '');
+            e.target.value = value;
+        });
+    </script>
+</body>
+</html>
