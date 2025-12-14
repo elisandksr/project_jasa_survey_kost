@@ -63,10 +63,10 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
-        .content {
+        .form-container {
             max-width: 900px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 50px 40px;
         }
 
         .summary-box {
@@ -274,8 +274,8 @@
         }
 
         @media (max-width: 600px) {
-            .content {
-                padding: 25px 15px;
+            .form-container {
+                padding: 25px 20px;
             }
 
             .summary-box,
@@ -319,7 +319,7 @@
             <h1>Pembayaran Survey Kost</h1>
         </div>
 
-        <div class="content">
+        <div class="form-container">
             <!-- Ringkasan Pesanan -->
             <div class="summary-box">
                 <h2>Ringkasan Pesanan</h2>
@@ -414,7 +414,7 @@
                 </div>
             </div>
 
-            <button class="submit-btn" id="submitBtn" disabled>Konfirmasi Pembayaran</button>
+            <button class="submit-btn" id="submitBtn" disabled>Bayar Sekarang</button>
         </div>
     </div>
 
@@ -442,7 +442,7 @@
             const paymentMethod = selectedPayment.value;
             
             // Redirect to payment confirmation page with payment method
-            window.location.href = `konfirmasi-pembayaran.html?method=${paymentMethod}`;
+            window.location.href = `survey_klien.html?method=${paymentMethod}`;
         });
 
         // Load order data from localStorage (if you want to persist data)

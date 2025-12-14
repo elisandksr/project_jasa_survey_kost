@@ -4,32 +4,314 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hasil Survey - Survey Kost Solo</title>
-    <link rel="stylesheet" href="css/survey_klien.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #FFF8F0;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+            padding: 20px 30px;
+            text-align: center;
+            color: #FFF8F0;
+            position: relative;
+        }
+
+        .back-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #FFF8F0;
+            text-decoration: none;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+            padding: 8px;
+            border-radius: 8px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 248, 240, 0.1);
+            transform: translateY(-50%) translateX(-3px);
+        }
+
+        .back-button svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Container */
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 50px 40px;
+        }
+
+        /* Status Card */
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(139, 115, 85, 0.1);
+            margin-bottom: 25px;
+            border: 2px solid #D2B48C;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .status-icon {
+            width: 30px;
+            height: 30px;
+            background: #4CAF50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .status-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #4CAF50;
+        }
+
+        .status-message {
+            color: #6B5B47;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Detail Survey Card */
+        .detail-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(139, 115, 85, 0.1);
+            margin-bottom: 25px;
+            border: 2px solid #D2B48C;
+        }
+
+        .detail-card h2 {
+            color: #8B7355;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #F5DEB3;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            background: #FFF8F0;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #A0826D;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #8B7355;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: #6B5B47;
+            font-weight: 500;
+        }
+
+        /* Dokumentasi Card */
+        .doc-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(139, 115, 85, 0.1);
+            margin-bottom: 25px;
+            border: 2px solid #D2B48C;
+        }
+
+        .doc-card h2 {
+            color: #8B7355;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #F5DEB3;
+        }
+
+        .doc-link {
+            background: #FFF8F0;
+            border: 2px solid #D2B48C;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .doc-link:hover {
+            border-color: #A0826D;
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.15);
+        }
+
+        .doc-link-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .doc-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .doc-info h3 {
+            color: #6B5B47;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .doc-info p {
+            color: #A0826D;
+            font-size: 13px;
+        }
+
+        .doc-button {
+            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .doc-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(139, 115, 85, 0.3);
+        }
+
+        /* Action Button */
+        .action-button {
+            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(139, 115, 85, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .back-button {
+                left: 10px;
+                font-size: 14px;
+                padding: 6px;
+            }
+
+            .back-button svg {
+                width: 24px;
+                height: 24px;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .doc-link {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .doc-link-left {
+                flex-direction: column;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
-        <div class="header-content">
-            <div class="header-left">
-                <button class="back-btn" onclick="history.back()">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
-                    </svg>
-                </button>
-                <h1>Hasil Survey</h1>
-            </div>
-            <button class="menu-btn">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="12" x2="21" y2="12"/>
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <line x1="3" y1="18" x2="21" y2="18"/>
-                </svg>
-            </button>
-        </div>
+        <button class="back-button" onclick="history.back()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+        </button>
+        <h1>Hasil Survey</h1>
     </div>
 
-    <!-- Container -->
     <div class="container">
+        <div class="form-container">
         <!-- Status Card -->
         <div class="status-card">
             <div class="status-header">
@@ -88,6 +370,7 @@
 
         <!-- Action Button -->
         <button class="action-button" onclick="orderAgain()">Pesan Survey Lagi</button>
+        </div>
     </div>
 
     <script>
