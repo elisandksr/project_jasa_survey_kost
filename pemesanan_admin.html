@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Manajemen Data Pemesanan</title>
     <style>
+        /* Tetap sama dengan kode asli, tidak ada perubahan */
         * {
             margin: 0;
             padding: 0;
@@ -331,7 +332,7 @@
             background: white;
             border-radius: 15px;
             width: 90%;
-            max-width: 600px;
+            max-width: 650px; /* Lebar Ditingkatkan */
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -355,7 +356,7 @@
         }
 
         .modal-header h2 {
-            font-size: 20px;
+            font-size: 22px; /* Ukuran font ditingkatkan */
             margin: 0;
         }
 
@@ -381,36 +382,62 @@
         }
 
         .modal-body {
-            padding: 25px;
+            padding: 30px 25px; /* Padding ditingkatkan */
+        }
+
+        .detail-group {
+            margin-bottom: 25px; /* Margin antara grup */
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #F0E6D2;
+        }
+
+        .detail-group:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .detail-group-title {
+            font-size: 16px;
+            color: #8B7355;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-left: 5px;
+            border-left: 3px solid #8B7355;
         }
 
         .detail-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsif lebih baik */
             gap: 20px;
-            margin-bottom: 25px;
         }
 
         .detail-item {
             background: #FFF8F0;
             padding: 15px;
             border-radius: 10px;
-            border-left: 4px solid #A0826D;
+            border: 1px solid #E5D5C5; /* Border diubah */
+            transition: all 0.2s ease;
+        }
+
+        .detail-item:hover {
+            border-color: #A0826D;
+            box-shadow: 0 0 5px rgba(160, 130, 109, 0.2);
         }
 
         .detail-label {
             font-size: 12px;
-            color: #8B7355;
-            font-weight: 600;
+            color: #A0826D; /* Warna label dipergelap */
+            font-weight: 700; /* Font weight ditingkatkan */
             margin-bottom: 5px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px; /* Letter spacing ditingkatkan */
         }
 
         .detail-value {
-            font-size: 15px;
+            font-size: 16px; /* Ukuran font ditingkatkan */
             color: #6B5B47;
-            font-weight: 500;
+            font-weight: 600; /* Font weight ditingkatkan */
+            word-wrap: break-word;
         }
 
         .detail-item.full-width {
@@ -418,17 +445,21 @@
         }
 
         .update-section {
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 2px solid #F0E6D2;
+            margin-top: 30px; /* Margin ditingkatkan */
+            padding-top: 30px;
+            border-top: 3px solid #E5D5C5; /* Border lebih tebal */
+            background: #F8F4F0; /* Background untuk menonjolkan */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
         .update-section label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px; /* Margin ditingkatkan */
             color: #8B7355;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 700;
+            font-size: 15px;
         }
 
         .update-section select {
@@ -436,35 +467,36 @@
             padding: 12px 15px;
             border: 2px solid #D2B48C;
             border-radius: 8px;
-            font-size: 14px;
+            font-size: 15px;
             color: #6B5B47;
             background: white;
             cursor: pointer;
-            transition: border-color 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
         .update-section select:focus {
             outline: none;
             border-color: #A0826D;
+            box-shadow: 0 0 0 3px rgba(160, 130, 109, 0.2);
         }
 
         .btn-update {
             width: 100%;
-            padding: 14px;
+            padding: 15px; /* Padding ditingkatkan */
             background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
             color: white;
             border: none;
             border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 17px;
+            font-weight: 700;
             cursor: pointer;
-            margin-top: 15px;
+            margin-top: 20px; /* Margin ditingkatkan */
             transition: all 0.3s ease;
         }
 
         .btn-update:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(139, 115, 85, 0.3);
+            transform: translateY(-3px); /* Efek hover ditingkatkan */
+            box-shadow: 0 8px 25px rgba(139, 115, 85, 0.4);
         }
 
         @media (max-width: 600px) {
@@ -618,7 +650,6 @@
         </div>
     </div>
 
-    <!-- Modal Detail -->
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -626,56 +657,71 @@
                 <button class="close-modal" onclick="closeModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <div class="detail-label">ID Pemesanan</div>
-                        <div class="detail-value" id="detailId">-</div>
+                <div class="detail-group">
+                    <div class="detail-group-title">Informasi Pemesanan</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">ID Pemesanan</div>
+                            <div class="detail-value" id="detailId">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value" id="detailStatus">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Jenis Paket</div>
+                            <div class="detail-value" id="detailPaket">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Jarak</div>
+                            <div class="detail-value" id="detailJarak">-</div>
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Status</div>
-                        <div class="detail-value" id="detailStatus">-</div>
+                </div>
+
+                <div class="detail-group">
+                    <div class="detail-group-title">Informasi Survei & Kontak</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">Jadwal Survey</div>
+                            <div class="detail-value" id="detailJadwal">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Waktu Survey</div>
+                            <div class="detail-value" id="detailWaktu">-</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">No Whatsapp</div>
+                            <div class="detail-value" id="detailWa">-</div>
+                        </div>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Jenis Paket</div>
-                        <div class="detail-value" id="detailPaket">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Waktu Survey</div>
-                        <div class="detail-value" id="detailWaktu">-</div>
-                    </div>
-                    <div class="detail-item full-width">
-                        <div class="detail-label">Alamat Kost</div>
-                        <div class="detail-value" id="detailAlamat">-</div>
-                    </div>
-                    <div class="detail-item full-width">
-                        <div class="detail-label">Catatan Tambahan</div>
-                        <div class="detail-value" id="detailCatatan">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">No Whatsapp</div>
-                        <div class="detail-value" id="detailWa">-</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-label">Jadwal Survey</div>
-                        <div class="detail-value" id="detailJadwal">-</div>
+                    <div class="detail-grid" style="margin-top: 20px;">
+                        <div class="detail-item full-width">
+                            <div class="detail-label">Alamat Kost</div>
+                            <div class="detail-value" id="detailAlamat">-</div>
+                        </div>
+                        <div class="detail-item full-width">
+                            <div class="detail-label">Catatan Tambahan</div>
+                            <div class="detail-value" id="detailCatatan">-</div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="update-section">
-                    <label for="updateStatus">Update Status</label>
+                    <label for="updateStatus">Update Status Pemesanan</label>
                     <select id="updateStatus">
                         <option value="Pending">Pending</option>
                         <option value="Proses">Proses</option>
                         <option value="Selesai">Selesai</option>
                     </select>
-                    <button class="btn-update" onclick="updateStatus()">Update</button>
+                    <button class="btn-update" onclick="updateStatus()">Update Status</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Search functionality
+        // Search functionality (Tetap sama)
         const searchInput = document.getElementById('searchInput');
         const table = document.getElementById('dataTable');
         const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
@@ -689,12 +735,12 @@
             });
         });
 
-        // Detail button handler
+        // Detail button handler (Menambahkan 'jarak' ke detailData)
         const detailData = {
             1: {
                 id: '01',
                 paket: 'Paket A',
-                jarak: '10Km',
+                jarak: '10Km', // Tambahkan properti jarak
                 alamat: 'Jl. Solo',
                 wa: '0857535326',
                 jadwal: '15 Desember 2025',
@@ -705,7 +751,7 @@
             2: {
                 id: '02',
                 paket: 'Paket B',
-                jarak: '5Km',
+                jarak: '5Km', // Tambahkan properti jarak
                 alamat: 'Jl. Slamet Riyadi',
                 wa: '0812345678',
                 jadwal: '16 Desember 2025',
@@ -716,7 +762,7 @@
             3: {
                 id: '03',
                 paket: 'Paket A',
-                jarak: '8Km',
+                jarak: '8Km', // Tambahkan properti jarak
                 alamat: 'Jl. Ahmad Yani',
                 wa: '0898765432',
                 jadwal: '17 Desember 2025',
@@ -734,6 +780,7 @@
             document.getElementById('detailId').textContent = data.id;
             document.getElementById('detailStatus').textContent = data.status;
             document.getElementById('detailPaket').textContent = data.paket;
+            document.getElementById('detailJarak').textContent = data.jarak; // Tampilkan Jarak
             document.getElementById('detailWaktu').textContent = data.waktu;
             document.getElementById('detailAlamat').textContent = data.alamat;
             document.getElementById('detailCatatan').textContent = data.catatan;
@@ -754,17 +801,17 @@
             const newStatus = document.getElementById('updateStatus').value;
             alert(`Status berhasil diupdate menjadi: ${newStatus}`);
             closeModal();
-            // Refresh data atau update tabel
+            // Implementasi untuk refresh data atau update tabel di sini
         }
 
-        // Close modal when clicking outside
+        // Close modal when clicking outside (Tetap sama)
         document.getElementById('detailModal').addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModal();
             }
         });
 
-        // Menu navigation
+        // Menu navigation (Tetap sama)
         document.querySelectorAll('.menu-item').forEach(item => {
             item.addEventListener('click', function(e) {
                 // Allow normal link navigation, remove preventDefault
