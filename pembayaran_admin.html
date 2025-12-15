@@ -210,19 +210,28 @@
             display: inline-block;
         }
 
-        .status-selesai {
-            background: #D4EDDA;
-            color: #155724;
-        }
-
-        .status-proses {
+        /* Status: Menunggu Verifikasi */
+        .status-menunggu {
             background: #FFF3CD;
             color: #856404;
         }
 
-        .status-pending {
+        /* Status: Berhasil/Terverifikasi */
+        .status-berhasil {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        /* Status: Ditolak */
+        .status-ditolak {
             background: #F8D7DA;
             color: #721C24;
+        }
+
+        /* Status: Proses (sedang diverifikasi) */
+        .status-proses {
+            background: #D1ECF1;
+            color: #0C5460;
         }
 
         .btn-detail {
@@ -367,30 +376,39 @@
             font-size: 13px;
         }
 
+        /* Status box colors */
+        .status-box-small.menunggu {
+            background: #FFF3CD;
+            color: #856404;
+        }
+
+        .status-box-small.berhasil {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .status-box-small.ditolak {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        .status-box-small.proses {
+            background: #D1ECF1;
+            color: #0C5460;
+        }
+
         .action-buttons-verify {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-top: 25px;
             padding-top: 25px;
             border-top: 2px solid #F0E6D2;
         }
 
-        .btn-detail-gray {
-            padding: 12px;
-            background: #E5D5C5;
-            color: #6B5B47;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-detail-gray:hover {
-            background: #D2B48C;
-            transform: translateY(-2px);
+        .action-buttons-verify.disabled {
+            opacity: 0.6;
+            pointer-events: none;
         }
 
         .btn-reject-red {
@@ -411,6 +429,11 @@
             box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
         }
 
+        .btn-reject-red:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .btn-approve-green {
             padding: 12px;
             background: #28a745;
@@ -428,6 +451,13 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
         }
+
+        .btn-approve-green:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+
 
         @media (max-width: 768px) {
             .sidebar {
@@ -549,7 +579,7 @@
                             <td>Rp 500.000</td>
                             <td>Transfer Bank BCA</td>
                             <td>linkabcdfg</td>
-                            <td><span class="status-badge status-proses">Menunggu</span></td>
+                            <td><span class="status-badge status-menunggu">Menunggu Verifikasi</span></td>
                             <td><button class="btn-detail" data-id="1">Detail</button></td>
                         </tr>
                         <tr>
@@ -559,7 +589,7 @@
                             <td>Rp 750.000</td>
                             <td>E-Wallet (OVO)</td>
                             <td>linkabcdfg</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
+                            <td><span class="status-badge status-berhasil">Berhasil</span></td>
                             <td><button class="btn-detail" data-id="2">Detail</button></td>
                         </tr>
                         <tr>
@@ -569,7 +599,7 @@
                             <td>Rp 1.200.000</td>
                             <td>Transfer Bank Mandiri</td>
                             <td>linkabcdfg</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td><span class="status-badge status-ditolak">Ditolak</span></td>
                             <td><button class="btn-detail" data-id="3">Detail</button></td>
                         </tr>
                     </tbody>
@@ -615,12 +645,11 @@
                     </div>
                     <div class="info-group">
                         <span class="info-label">Status Saat Ini</span>
-                        <span class="status-box-small" id="detailStatus">Menunggu</span>
+                        <span class="status-box-small menunggu" id="detailStatus">Menunggu Verifikasi</span>
                     </div>
                 </div>
 
-                <div class="action-buttons-verify">
-                    <button class="btn-detail-gray" id="btnDetailMore">Detail</button>
+                <div class="action-buttons-verify" id="actionButtons">
                     <button class="btn-reject-red" id="btnReject">Tolak</button>
                     <button class="btn-approve-green" id="btnApprove">Setuju</button>
                 </div>
@@ -629,7 +658,7 @@
     </div>
 
     <script>
-        // Data pembayaran
+        // Data pembayaran dengan status yang benar
         const detailData = {
             1: {
                 id: 'TRX001',
@@ -638,7 +667,7 @@
                 jumlah: 'Rp 500.000',
                 metode: 'Transfer Bank BCA',
                 bukti: 'linkabcdfg',
-                status: 'Menunggu'
+                status: 'menunggu'  // menunggu, berhasil, ditolak, proses
             },
             2: {
                 id: 'TRX002',
@@ -647,7 +676,7 @@
                 jumlah: 'Rp 750.000',
                 metode: 'E-Wallet (OVO)',
                 bukti: 'linkabcdfg',
-                status: 'Selesai'
+                status: 'berhasil'
             },
             3: {
                 id: 'TRX003',
@@ -656,26 +685,57 @@
                 jumlah: 'Rp 1.200.000',
                 metode: 'Transfer Bank Mandiri',
                 bukti: 'linkabcdfg',
-                status: 'Pending'
+                status: 'ditolak',
+                alasan_ditolak: 'Nominal tidak sesuai dengan yang diminta'
             }
+        };
+
+        // Status constants
+        const STATUS = {
+            MENUNGGU: 'menunggu',      // Menunggu verifikasi
+            PROSES: 'proses',          // Sedang diverifikasi
+            BERHASIL: 'berhasil',      // Pembayaran terverifikasi dan berhasil
+            DITOLAK: 'ditolak'         // Pembayaran ditolak
         };
 
         // Get elements
         const modal = document.getElementById('detailModal');
         const closeBtn = document.getElementById('closeBtn');
-        const btnDetailMore = document.getElementById('btnDetailMore');
         const btnReject = document.getElementById('btnReject');
         const btnApprove = document.getElementById('btnApprove');
-        let currentId = null; // Menyimpan ID yang sedang dibuka
+        const actionButtons = document.getElementById('actionButtons');
+        let currentId = null;
 
         // Event listener untuk semua tombol detail menggunakan event delegation
         document.getElementById('tableBody').addEventListener('click', function(e) {
             if (e.target.classList.contains('btn-detail')) {
                 const id = e.target.getAttribute('data-id');
-                currentId = id; // Simpan ID saat ini
+                currentId = id;
                 showDetail(id);
             }
         });
+
+        // Fungsi untuk mendapatkan status text yang lebih user-friendly
+        function getStatusText(status) {
+            const statusMap = {
+                'menunggu': 'Menunggu Verifikasi',
+                'proses': 'Sedang Diverifikasi',
+                'berhasil': 'Berhasil',
+                'ditolak': 'Ditolak'
+            };
+            return statusMap[status] || status;
+        }
+
+        // Fungsi untuk mendapatkan status class
+        function getStatusClass(status) {
+            const classMap = {
+                'menunggu': 'menunggu',
+                'proses': 'proses',
+                'berhasil': 'berhasil',
+                'ditolak': 'ditolak'
+            };
+            return classMap[status] || status;
+        }
 
         // Fungsi show detail
         function showDetail(id) {
@@ -691,22 +751,33 @@
             document.getElementById('detailBukti').textContent = data.bukti;
             
             const statusBox = document.getElementById('detailStatus');
-            statusBox.textContent = data.status;
+            const statusText = getStatusText(data.status);
+            const statusClass = getStatusClass(data.status);
             
-            if (data.status === 'Selesai') {
-                statusBox.style.background = '#D4EDDA';
-                statusBox.style.color = '#155724';
-            } else if (data.status === 'Menunggu') {
-                statusBox.style.background = '#FFF3CD';
-                statusBox.style.color = '#856404';
-            } else if (data.status === 'Pending') {
-                statusBox.style.background = '#F8D7DA';
-                statusBox.style.color = '#721C24';
-            }
+            statusBox.textContent = statusText;
+            statusBox.className = 'status-box-small ' + statusClass;
+
+            // Handle status-specific UI
+            handleStatusUI(data.status, data);
 
             // Show modal
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
+        }
+
+        // Fungsi untuk handle UI berdasarkan status
+        function handleStatusUI(status, data) {
+            // Jika status BERHASIL atau DITOLAK: disable tolak & setuju
+            if (status === STATUS.BERHASIL || status === STATUS.DITOLAK) {
+                btnReject.disabled = true;
+                btnApprove.disabled = true;
+                actionButtons.classList.add('disabled');
+            } else {
+                // Status MENUNGGU atau PROSES: semua aktif
+                btnReject.disabled = false;
+                btnApprove.disabled = false;
+                actionButtons.classList.remove('disabled');
+            }
         }
 
         // Close modal
@@ -723,62 +794,60 @@
             }
         });
 
-        // Tombol Detail lebih lengkap
-        btnDetailMore.addEventListener('click', function() {
-            alert('Membuka detail lengkap pembayaran...');
-        });
-
         // Tombol Tolak
         btnReject.addEventListener('click', function() {
             const reason = prompt('Masukkan alasan penolakan pembayaran:');
             if (reason && reason.trim() !== '') {
-                // Update status di data
-                detailData[currentId].status = 'Ditolak';
+                // Ubah status ke ditolak
+                detailData[currentId].status = STATUS.DITOLAK;
+                detailData[currentId].alasan_ditolak = reason;
                 
-                // Update status di tabel
-                updateTableStatus(currentId, 'Ditolak');
+                // Update tabel
+                updateTableStatus(currentId, STATUS.DITOLAK);
                 
-                alert('Pembayaran ditolak. Alasan: ' + reason);
-                modal.classList.remove('show');
-                document.body.style.overflow = 'auto';
+                // Update modal
+                const statusBox = document.getElementById('detailStatus');
+                statusBox.textContent = 'Ditolak';
+                statusBox.className = 'status-box-small ditolak';
+                
+                handleStatusUI(STATUS.DITOLAK, detailData[currentId]);
+                
+                alert('✅ Pembayaran berhasil ditolak.\nAlasan: ' + reason);
             } else if (reason !== null) {
-                alert('Harap masukkan alasan penolakan!');
+                alert('⚠️ Harap masukkan alasan penolakan!');
             }
         });
 
         // Tombol Setuju
         btnApprove.addEventListener('click', function() {
             if (confirm('Apakah Anda yakin ingin menyetujui pembayaran ini?')) {
-                // Update status di data
-                detailData[currentId].status = 'Selesai';
+                // Ubah status ke berhasil
+                detailData[currentId].status = STATUS.BERHASIL;
                 
-                // Update status di tabel
-                updateTableStatus(currentId, 'Selesai');
+                // Update tabel
+                updateTableStatus(currentId, STATUS.BERHASIL);
                 
-                alert('Pembayaran berhasil disetujui!');
-                modal.classList.remove('show');
-                document.body.style.overflow = 'auto';
+                // Update modal
+                const statusBox = document.getElementById('detailStatus');
+                statusBox.textContent = 'Berhasil';
+                statusBox.className = 'status-box-small berhasil';
+                
+                handleStatusUI(STATUS.BERHASIL, detailData[currentId]);
+                
+                alert('✅ Pembayaran berhasil disetujui!');
             }
         });
 
         // Fungsi untuk update status di tabel
         function updateTableStatus(id, newStatus) {
             const rows = document.getElementById('tableBody').getElementsByTagName('tr');
-            const rowIndex = parseInt(id) - 1; // karena id dimulai dari 1
+            const rowIndex = parseInt(id) - 1;
             
             if (rows[rowIndex]) {
-                const statusCell = rows[rowIndex].cells[6]; // kolom status adalah index 6
-                let statusClass = '';
-                
-                if (newStatus === 'Selesai') {
-                    statusClass = 'status-selesai';
-                } else if (newStatus === 'Menunggu') {
-                    statusClass = 'status-proses';
-                } else if (newStatus === 'Pending' || newStatus === 'Ditolak') {
-                    statusClass = 'status-pending';
-                }
-                
-                statusCell.innerHTML = '<span class="status-badge ' + statusClass + '">' + newStatus + '</span>';
+                const statusCell = rows[rowIndex].cells[6];
+                const statusText = getStatusText(newStatus);
+                const statusClass = getStatusClass(newStatus);
+                statusCell.innerHTML = '<span class="status-badge status-' + statusClass + '">' + statusText + '</span>';
             }
         }
 
