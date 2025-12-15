@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Hasil Survey</title>
+    <link rel="stylesheet" href="css/survey_admin.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="admin-profile">
+            <div class="admin-icon">👤</div>
+            <h3>Admin</h3>
+        </div>
+
+        <div class="menu">
+            <a href="data-klien.html" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Data Klien</span>
+            </a>
+
+            <a href="pemesanan_admin.html" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                <span>Data Pemesanan</span>
+            </a>
+
+            <a href="pembayaran_admin.html" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                    <line x1="1" y1="10" x2="23" y2="10"/>
+                </svg>
+                <span>Data Pembayaran</span>
+            </a>
+
+            <a href="survey_admin.html" class="menu-item active">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="18" x2="12" y2="12"/>
+                    <line x1="9" y1="15" x2="15" y2="15"/>
+                </svg>
+                <span>Hasil Survei</span>
+            </a>
+
+            <a href="laporan.html" class="menu-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                </svg>
+                <span>Laporan</span>
+            </a>
+        </div>
+
+        <a href="#" class="logout" onclick="return confirm('Yakin ingin logout?')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/>
+                <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span>Logout</span>
+        </a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Manajemen Hasil Survey</h1>
+        </div>
+
+        <div class="content">
+            <div class="form-container">
+                <!-- Info Box -->
+                <div class="info-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="16" x2="12" y2="12"/>
+                        <line x1="12" y1="8" x2="12.01" y2="8"/>
+                    </svg>
+                    <p>Upload hasil survey setelah melakukan kunjungan. Pastikan semua data terisi dengan lengkap dan link Google Drive dapat diakses oleh klien.</p>
+                </div>
+
+                <!-- Form Card 1: Identitas Pemesanan -->
+                <div class="form-card">
+                    <h2>Identitas Pemesanan</h2>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="idPemesanan">ID Pemesanan <span>*</span></label>
+                            <select id="idPemesanan" required>
+                                <option value="">-- Pilih ID Pemesanan --</option>
+                                <option value="01">01 - Jl. Solo</option>
+                                <option value="02">02 - Jl. Slamet Riyadi</option>
+                                <option value="03">03 - Jl. Ahmad Yani</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tanggalSurvey">Tanggal Survey <span>*</span></label>
+                            <input type="date" id="tanggalSurvey" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="alamatKost">Alamat Kost <span>*</span></label>
+                            <input type="text" id="alamatKost" placeholder="Masukkan alamat lengkap kost" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paket">Paket <span>*</span></label>
+                            <input type="text" id="paket" placeholder="Paket Express" readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Card 2: Dokumentasi Survey -->
+                <div class="form-card">
+                    <h2>Dokumentasi Survey</h2>
+                    
+                    <div class="form-group">
+                        <label for="linkDrive">Link Google Drive <span>*</span></label>
+                        <div class="input-with-icon">
+                            <svg class="input-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                            </svg>
+                            <input type="url" id="linkDrive" placeholder="https://drive.google.com/..." required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="deskripsiSurvey">Deskripsi Hasil Survey <span>*</span></label>
+                        <textarea id="deskripsiSurvey" placeholder="Jelaskan detail kondisi kost, fasilitas yang tersedia, kelebihan dan kekurangan, serta rekomendasi..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="1 4 1 10 7 10"/>
+                            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+                        </svg>
+                        Reset
+                    </button>
+                    <button type="button" class="btn btn-primary" onclick="simpanHasil()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg>
+                        Simpan Hasil
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="kirimKeKlien()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                        Kirim ke Klien
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Auto-fill data when selecting ID Pemesanan
+        document.getElementById('idPemesanan').addEventListener('change', function() {
+            const selected = this.value;
+            
+            // Dummy data
+            const pemesananData = {
+                '001': {
+                    alamat: 'Jl. Slamet Riyadi No. 123, Solo',
+                    paket: 'Paket Express',
+                    tanggal: '2025-12-15'
+                },
+                '002': {
+                    alamat: 'Jl. Ahmad Yani No. 45, Solo',
+                    paket: 'Paket Reguler',
+                    tanggal: '2025-12-16'
+                },
+                '003': {
+                    alamat: 'Jl. Veteran No. 78, Solo',
+                    paket: 'Paket Express',
+                    tanggal: '2025-12-17'
+                }
+            };
+
+            if (selected && pemesananData[selected]) {
+                const data = pemesananData[selected];
+                document.getElementById('alamatKost').value = data.alamat;
+                document.getElementById('paket').value = data.paket;
+                document.getElementById('tanggalSurvey').value = data.tanggal;
+            } else {
+                document.getElementById('alamatKost').value = '';
+                document.getElementById('paket').value = '';
+                document.getElementById('tanggalSurvey').value = '';
+            }
+        });
+
+        function resetForm() {
+            if (confirm('Yakin ingin mereset form? Semua data yang belum disimpan akan hilang.')) {
+                document.getElementById('idPemesanan').value = '';
+                document.getElementById('tanggalSurvey').value = '';
+                document.getElementById('alamatKost').value = '';
+                document.getElementById('paket').value = '';
+                document.getElementById('linkDrive').value = '';
+                document.getElementById('deskripsiSurvey').value = '';
+            }
+        }
+
+        function simpanHasil() {
+            const idPemesanan = document.getElementById('idPemesanan').value;
+            const tanggalSurvey = document.getElementById('tanggalSurvey').value;
+            const alamatKost = document.getElementById('alamatKost').value;
+            const linkDrive = document.getElementById('linkDrive').value;
+            const deskripsiSurvey = document.getElementById('deskripsiSurvey').value;
+
+            // Validasi
+            if (!idPemesanan || !tanggalSurvey || !alamatKost || !linkDrive || !deskripsiSurvey) {
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            // Simulasi save
+            alert('Hasil survey berhasil disimpan!');
+            console.log({
+                idPemesanan,
+                tanggalSurvey,
+                alamatKost,
+                linkDrive,
+                deskripsiSurvey
+            });
+        }
+
+        function kirimKeKlien() {
+            const idPemesanan = document.getElementById('idPemesanan').value;
+            const linkDrive = document.getElementById('linkDrive').value;
+
+            if (!idPemesanan || !linkDrive) {
+                alert('Mohon lengkapi ID Pemesanan dan Link Google Drive terlebih dahulu!');
+                return;
+            }
+
+            // Simulasi kirim WhatsApp
+            const phone = '628123456789'; // Nomor klien dari database
+            const message = `Halo! Hasil survey kost Anda (ID: ${idPemesanan}) sudah selesai. Silakan cek dokumentasi lengkap di link berikut: ${linkDrive}`;
+            const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+            
+            window.open(waLink, '_blank');
+            alert('Membuka WhatsApp untuk mengirim hasil survey ke klien...');
+        }
+    </script>
+</body>
+</html>
