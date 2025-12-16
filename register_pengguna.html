@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Sistem Informasi Pemesanan Jasa Survey Kost</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #8b7355;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 100%;
+            height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .title-bar {
+            background: #c49563;
+            padding: 12px 20px;
+            text-align: center;
+            border-bottom: 1px solid #b38552;
+        }
+
+        .title-bar h1 {
+            font-size: 14px;
+            color: white;
+            font-weight: 500;
+        }
+
+        .content {
+            background: #f9f6f3;
+            padding: 40px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .content-inner {
+            width: 100%;
+            max-width: 700px;
+            padding-top: 40px;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6b5446;
+            font-size: 18px;
+            margin-bottom: 30px;
+            cursor: pointer;
+            width: fit-content;
+            font-weight: 500;
+        }
+
+        .form-container {
+            background: #f9f6f3;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #6b5446;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #d4a574;
+            background: white;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6b5446;
+            box-shadow: 0 0 0 3px rgba(107, 84, 70, 0.1);
+            background: white;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #6b5446;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #5a4638;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 84, 70, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b5446;
+        }
+
+        .login-link a {
+            color: #d4a574;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+            color: #c49563;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="title-bar">
+            <h1>Sistem Informasi Pemesanan Jasa Survey Kost di Kota Solo</h1>
+        </div>
+
+        <div class="content">
+            <div class="content-inner">
+                <div class="back-btn" onclick="goBack()">
+                    ← <span>Daftar</span>
+                </div>
+
+                <div id="successMessage" class="success-message"></div>
+                <div id="errorMessage" class="error-message"></div>
+
+                <form class="form-container" id="registerForm">
+                    <div class="form-group">
+                        <label for="namaLengkap">Nama Lengkap</label>
+                        <input type="text" id="namaLengkap" placeholder="Masukkan nama" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="Masukkan email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="whatsapp">No. WhatsApp</label>
+                        <input type="tel" id="whatsapp" placeholder="08xxxxxxxxxx" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Konfirmasi Password</label>
+                        <input type="password" id="confirmPassword" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">DAFTAR</button>
+
+                    <div class="login-link">
+                        Sudah punya akun? <a href="login_pengguna.html">Login</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        registerForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            // Get form values
+            const namaLengkap = document.getElementById('namaLengkap').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const whatsapp = document.getElementById('whatsapp').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            // Validation
+            if (!namaLengkap || !email || !whatsapp || !password || !confirmPassword) {
+                showError('Semua field harus diisi!');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Password minimal 6 karakter!');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showError('Password dan konfirmasi password tidak sama!');
+                return;
+            }
+
+            if (!whatsapp.match(/^08[0-9]{8,11}$/)) {
+                showError('Format nomor WhatsApp tidak valid! Harus diawali 08 dan 10-13 digit.');
+                return;
+            }
+
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showError('Format email tidak valid!');
+                return;
+            }
+
+            // Check if user already exists
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            const emailExists = users.some(user => user.email === email);
+            
+            if (emailExists) {
+                showError('Email sudah terdaftar! Silakan gunakan email lain atau login.');
+                return;
+            }
+
+            // Create user data with password
+            const userData = {
+                namaLengkap: namaLengkap,
+                email: email,
+                whatsapp: whatsapp,
+                password: password, // PENTING: Password disimpan (untuk demo saja)
+                registeredAt: new Date().toLocaleString('id-ID')
+            };
+
+            // Add to users array
+            users.push(userData);
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Show success message
+            showSuccess('Registrasi berhasil! Mengalihkan ke halaman login...');
+            
+            // Reset form
+            registerForm.reset();
+
+            // Redirect to login after 2 seconds
+            setTimeout(() => {
+                window.location.href = 'login_pengguna.html';
+            }, 2000);
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 4000);
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+        }
+
+        function goBack() {
+            if (confirm('Kembali ke halaman sebelumnya?')) {
+                window.history.back();
+            }
+        }
+
+        // Real-time password match indicator
+        document.getElementById('confirmPassword').addEventListener('input', function() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                this.style.borderLeft = '4px solid #f44336';
+            } else if (confirmPassword && password === confirmPassword) {
+                this.style.borderLeft = '4px solid #4caf50';
+            } else {
+                this.style.borderLeft = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
