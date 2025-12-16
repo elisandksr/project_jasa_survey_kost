@@ -69,13 +69,34 @@
             padding: 50px 40px;
         }
 
+        .form-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(139, 115, 85, 0.1);
+            border: 2px solid #D2B48C;
+        }
+
+        .form-card h2 {
+            color: #8B7355;
+            font-size: 20px;
+            margin-bottom: 25px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #F5DEB3;
+        }
+
         .form-group {
-            margin-bottom: 28px;
+            margin-bottom: 25px;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
         }
 
         label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             color: #8B7355;
             font-weight: 600;
             font-size: 15px;
@@ -83,7 +104,6 @@
 
         .required {
             color: #D2691E;
-            display: none;
         }
 
         input[type="text"],
@@ -113,7 +133,7 @@
 
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
             font-family: inherit;
         }
 
@@ -121,6 +141,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
+            margin-bottom: 0;
         }
 
         .paket-option {
@@ -204,17 +225,40 @@
         }
 
         .info-box {
-            background: linear-gradient(135deg, #F5DEB3 0%, #F0E6D2 100%);
+            background: linear-gradient(135deg, #FFF3E0 0%, #FFE8CC 100%);
             padding: 15px;
             border-radius: 10px;
-            border-left: 4px solid #A0826D;
+            border-left: 4px solid #D2691E;
             margin-bottom: 25px;
+            display: flex;
+            gap: 12px;
+            align-items: start;
+        }
+
+        .info-box svg {
+            width: 24px;
+            height: 24px;
+            color: #D2691E;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .info-box-content {
+            flex: 1;
+        }
+
+        .info-box h3 {
+            color: #D2691E;
+            font-size: 15px;
+            margin-bottom: 6px;
+            font-weight: 600;
         }
 
         .info-box p {
             color: #8B7355;
             font-size: 14px;
             line-height: 1.6;
+            margin: 0;
         }
 
         @media (max-width: 600px) {
@@ -257,64 +301,75 @@
 
         <div class="form-container">
             <form id="surveyForm">
-                <div class="form-group">
-                    <label>Pilih Paket <span class="required">*</span></label>
-                    <div class="paket-container">
-                        <div class="paket-option">
-                            <input type="radio" id="regular" name="paket" value="regular" required>
-                            <label for="regular" class="paket-card">
-                                <h3>Regular</h3>
-                                <div class="price">Rp 50.000</div>
-                                <div class="duration">2-4 Hari</div>
-                            </label>
-                        </div>
-                        <div class="paket-option">
-                            <input type="radio" id="express" name="paket" value="express">
-                            <label for="express" class="paket-card">
-                                <h3>Express</h3>
-                                <div class="price">Rp 75.000</div>
-                                <div class="duration">1 Hari Jadi</div>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="alamat">Alamat Kost <span class="required">*</span></label>
-                    <textarea id="alamat" name="alamat" placeholder="Masukkan alamat lengkap kost yang akan di-survey" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="jarak">Jarak dari Kantor (km) <span class="required">*</span></label>
-                    <input type="text" id="jarak" name="jarak" placeholder="Contoh: 5" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="whatsapp">No. WhatsApp Client <span class="required">*</span></label>
-                    <input type="tel" id="whatsapp" name="whatsapp" placeholder="08xxxxxxxxxx" required>
-                </div>
-
-                <div class="form-group">
-                    <label>Jadwal Survey <span class="required">*</span></label>
-                    <div class="waktu-container">
-                        <div>
-                            <input type="date" id="tanggal" name="tanggal" required>
-                        </div>
-                        <div>
-                            <select id="waktu" name="waktu" required>
-                                <option value="">Pilih Waktu</option>
-                                <option value="08:00-10:00">08:00 - 10:00</option>
-                                <option value="10:00-12:00">10:00 - 12:00</option>
-                                <option value="13:00-15:00">13:00 - 15:00</option>
-                                <option value="15:00-17:00">15:00 - 17:00</option>
-                            </select>
+                <!-- Pilih Paket -->
+                <div class="form-card">
+                    <h2>Pilih Paket Survey</h2>
+                    <div class="form-group">
+                        <div class="paket-container">
+                            <div class="paket-option">
+                                <input type="radio" id="regular" name="paket" value="regular" required>
+                                <label for="regular" class="paket-card">
+                                    <h3>Regular</h3>
+                                    <div class="price">Rp 50.000</div>
+                                    <div class="duration">2-4 Hari</div>
+                                </label>
+                            </div>
+                            <div class="paket-option">
+                                <input type="radio" id="express" name="paket" value="express">
+                                <label for="express" class="paket-card">
+                                    <h3>Express</h3>
+                                    <div class="price">Rp 75.000</div>
+                                    <div class="duration">1 Hari Selesai</div>
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="catatan">Catatan Tambahan (Opsional)</label>
-                    <textarea id="catatan" name="catatan" placeholder="Informasi tambahan untuk surveyor"></textarea>
+                <!-- Detail Lokasi -->
+                <div class="form-card">
+                    <h2>Detail Lokasi</h2>
+                    <div class="form-group">
+                        <label for="alamat">Alamat Kost <span class="required"></span></label>
+                        <textarea id="alamat" name="alamat" placeholder="Masukkan alamat lengkap kost yang akan di-survey" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="jarak">Jarak dari Kantor (km) <span class="required"></span></label>
+                        <input type="text" id="jarak" name="jarak" placeholder="Contoh: 5" required>
+                    </div>
+                </div>
+
+                <!-- Kontak & Jadwal -->
+                <div class="form-card">
+                    <h2>Kontak & Jadwal</h2>
+                    <div class="form-group">
+                        <label for="whatsapp">No. WhatsApp <span class="required"></span></label>
+                        <input type="tel" id="whatsapp" name="whatsapp" placeholder="08xxxxxxxxxx" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jadwal Survey <span class="required"></span></label>
+                        <div class="waktu-container">
+                            <div>
+                                <input type="date" id="tanggal" name="tanggal" required>
+                            </div>
+                            <div>
+                                <select id="waktu" name="waktu" required>
+                                    <option value="">Pilih Waktu</option>
+                                    <option value="08:00-10:00">08:00 - 10:00</option>
+                                    <option value="10:00-12:00">10:00 - 12:00</option>
+                                    <option value="13:00-15:00">13:00 - 15:00</option>
+                                    <option value="15:00-17:00">15:00 - 17:00</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="catatan">Catatan Tambahan (Opsional)</label>
+                        <textarea id="catatan" name="catatan" placeholder="Informasi tambahan untuk surveyor"></textarea>
+                    </div>
                 </div>
 
                 <button type="submit" class="submit-btn">Lanjut ke Pembayaran</button>
@@ -326,18 +381,16 @@
         const form = document.getElementById('surveyForm');
         const tanggalInput = document.getElementById('tanggal');
         
-        // Set minimum date to today
+        // Set minimum date to today (allows today's date)
         const today = new Date();
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        const minDate = tomorrow.toISOString().split('T')[0];
+        const minDate = today.toISOString().split('T')[0];
         tanggalInput.min = minDate;
 
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
             // Redirect to payment page
-            window.location.href = 'pembayaran.html';
+            window.location.href = 'pembayaran_user.html';
         });
 
         // Format phone number input

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistem Informasi Pemesanan Jasa Survey Kost</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #8b7355;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 100%;
+            height: 100vh;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: #d4a574;
+            padding: 15px 20px;
+            border-bottom: 2px solid #c49563;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .content {
+            background: #f9f6f3;
+            padding: 60px 40px;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .profile-icon {
+            width: 100px;
+            height: 100px;
+            border: 3px solid #6b5446;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: white;
+        }
+
+        .profile-section h2 {
+            font-size: 28px;
+            color: #6b5446;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #6b5446;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #d4a574;
+            background: white;
+            border-radius: 6px;
+            font-size: 15px;
+            color: #333;
+            transition: all 0.3s;
+        }
+
+        input::placeholder {
+            color: #999;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #6b5446;
+            box-shadow: 0 0 0 3px rgba(107, 84, 70, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #6b5446;
+            border: none;
+            border-radius: 6px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: #5a4638;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 84, 70, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 15px;
+            color: #6b5446;
+        }
+
+        .register-link a {
+            color: #d4a574;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+            color: #c49563;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Login</h1>
+        </div>
+
+        <div class="content">
+            <div class="login-box">
+                <div class="profile-section">
+                    <div class="profile-icon"></div>
+                    <h2>Survey Kost Web</h2>
+                </div>
+
+                <div id="successMessage" class="success-message"></div>
+                <div id="errorMessage" class="error-message"></div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="email@gmail.com" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" placeholder="••••••••" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Login</button>
+
+                    <div class="register-link">
+                        Belum punya akun? <a href="register_pengguna.html">Daftar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset messages
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            // Get form values
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            // Validation
+            if (!email || !password) {
+                showError('Email dan password harus diisi!');
+                return;
+            }
+
+            if (!email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+                showError('Format email tidak valid!');
+                return;
+            }
+
+            if (password.length < 6) {
+                showError('Password minimal 6 karakter!');
+                return;
+            }
+
+            // Get users from localStorage
+            const users = JSON.parse(localStorage.getItem('users') || '[]');
+            
+            // Find user with matching email and password
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                showSuccess('Login berhasil! Mengalihkan ke dashboard...');
+                
+                // Save login session
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                
+                // Redirect after 1.5 seconds
+                setTimeout(() => {
+                    alert('Selamat datang, ' + user.namaLengkap + '!');
+                    // window.location.href = 'dashboard.html';
+                    window.location.href = 'pemesanan_user.html';
+                }, 1500);
+            } else {
+                // Check if email exists but password wrong
+                const emailExists = users.some(u => u.email === email);
+                if (emailExists) {
+                    showError('Password salah!');
+                } else {
+                    showError('Akun tidak ditemukan. Silakan daftar terlebih dahulu.');
+                }
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 4000);
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            if (isLoggedIn === 'true') {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                if (confirm('Anda sudah login sebagai ' + currentUser.namaLengkap + '. Lanjut ke dashboard?')) {
+                    window.location.href = 'pemesanan_user.html';
+                }
+            }
+        });
+    </script>
+</body>
+</html>
