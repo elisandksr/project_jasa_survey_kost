@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Manajemen Data Pembayaran</title>
     <style>
+        /* ... (Semua style CSS Anda tetap sama) ... */
         * {
             margin: 0;
             padding: 0;
@@ -188,6 +189,7 @@
             border-bottom: 1px solid #F0E6D2;
             color: #6B5B47;
             font-size: 14px;
+            white-space: nowrap; /* Added this to keep table headers/data visible on smaller screens */
         }
 
         tbody tr {
@@ -566,6 +568,7 @@
                             <th>Klien</th>
                             <th>Jumlah</th>
                             <th>Metode</th>
+                            <th>Tanggal Pembayaran</th> 
                             <th>Bukti Pembayaran</th>
                             <th>Status</th>
                             <th>Aksi</th>
@@ -578,6 +581,7 @@
                             <td>Budi Santoso</td>
                             <td>Rp 500.000</td>
                             <td>Transfer Bank BCA</td>
+                            <td>2025-12-15</td> 
                             <td>linkabcdfg</td>
                             <td><span class="status-badge status-menunggu">Menunggu</span></td>
                             <td><button class="btn-detail" data-id="1">Detail</button></td>
@@ -588,6 +592,7 @@
                             <td>Siti Rahmawati</td>
                             <td>Rp 750.000</td>
                             <td>E-Wallet (OVO)</td>
+                            <td>2025-12-14</td> 
                             <td>linkabcdfg</td>
                             <td><span class="status-badge status-berhasil">Berhasil</span></td>
                             <td><button class="btn-detail" data-id="2">Detail</button></td>
@@ -598,6 +603,7 @@
                             <td>Ahmad Fauzi</td>
                             <td>Rp 1.200.000</td>
                             <td>Transfer Bank Mandiri</td>
+                            <td>2025-12-13</td> 
                             <td>linkabcdfg</td>
                             <td><span class="status-badge status-ditolak">Ditolak</span></td>
                             <td><button class="btn-detail" data-id="3">Detail</button></td>
@@ -608,7 +614,6 @@
         </div>
     </div>
 
-    <!-- Modal Detail -->
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -640,6 +645,10 @@
                         <span class="info-value" id="detailMetode">Transfer Bank BCA</span>
                     </div>
                     <div class="info-group">
+                        <span class="info-label">Tanggal Pembayaran</span>
+                        <span class="info-value" id="detailTanggal">2025-12-15</span>
+                    </div>
+                    <div class="info-group">
                         <span class="info-label">Bukti Pembayaran</span>
                         <span class="info-value" id="detailBukti">linkabcdfg</span>
                     </div>
@@ -657,8 +666,9 @@
         </div>
     </div>
 
+
     <script>
-        // Data pembayaran dengan status yang benar
+        // Data pembayaran dengan status dan tanggal yang benar
         const detailData = {
             1: {
                 id: 'TRX001',
@@ -666,8 +676,9 @@
                 klien: 'Budi Santoso',
                 jumlah: 'Rp 500.000',
                 metode: 'Transfer Bank BCA',
+                tanggal: '2025-12-15', // DATA BARU
                 bukti: 'linkabcdfg',
-                status: 'menunggu'  // menunggu, berhasil, ditolak, proses
+                status: 'menunggu'  // menunggu, berhasil, ditolak, proses
             },
             2: {
                 id: 'TRX002',
@@ -675,6 +686,7 @@
                 klien: 'Siti Rahmawati',
                 jumlah: 'Rp 750.000',
                 metode: 'E-Wallet (OVO)',
+                tanggal: '2025-12-14', // DATA BARU
                 bukti: 'linkabcdfg',
                 status: 'berhasil'
             },
@@ -684,6 +696,7 @@
                 klien: 'Ahmad Fauzi',
                 jumlah: 'Rp 1.200.000',
                 metode: 'Transfer Bank Mandiri',
+                tanggal: '2025-12-13', // DATA BARU
                 bukti: 'linkabcdfg',
                 status: 'ditolak',
                 alasan_ditolak: 'Nominal tidak sesuai dengan yang diminta'
@@ -692,10 +705,10 @@
 
         // Status constants
         const STATUS = {
-            MENUNGGU: 'menunggu',      // Menunggu verifikasi
-            PROSES: 'proses',          // Sedang diverifikasi
-            BERHASIL: 'berhasil',      // Pembayaran terverifikasi dan berhasil
-            DITOLAK: 'ditolak'         // Pembayaran ditolak
+            MENUNGGU: 'menunggu',      // Menunggu verifikasi
+            PROSES: 'proses',          // Sedang diverifikasi
+            BERHASIL: 'berhasil',      // Pembayaran terverifikasi dan berhasil
+            DITOLAK: 'ditolak'         // Pembayaran ditolak
         };
 
         // Get elements
@@ -748,6 +761,7 @@
             document.getElementById('detailKlien').textContent = data.klien;
             document.getElementById('detailJumlah').textContent = data.jumlah;
             document.getElementById('detailMetode').textContent = data.metode;
+            document.getElementById('detailTanggal').textContent = data.tanggal; // PERBARUAN: Tanggal
             document.getElementById('detailBukti').textContent = data.bukti;
             
             const statusBox = document.getElementById('detailStatus');
@@ -844,7 +858,8 @@
             const rowIndex = parseInt(id) - 1;
             
             if (rows[rowIndex]) {
-                const statusCell = rows[rowIndex].cells[6];
+                // Kolom Status ada di index 8 (index ke-0 adalah ID Transaksi, dst.)
+                const statusCell = rows[rowIndex].cells[8]; // Indeks 8 untuk kolom Status yang baru
                 const statusText = getStatusText(newStatus);
                 const statusClass = getStatusClass(newStatus);
                 statusCell.innerHTML = '<span class="status-badge status-' + statusClass + '">' + statusText + '</span>';
