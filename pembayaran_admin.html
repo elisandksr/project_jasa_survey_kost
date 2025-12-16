@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Manajemen Data Pemesanan</title>
+    <title>Admin - Manajemen Data Pembayaran</title>
     <style>
         * {
             margin: 0;
@@ -210,22 +210,28 @@
             display: inline-block;
         }
 
-        /* Status Pending */
-        .status-pending {
+        /* Status: Menunggu Verifikasi */
+        .status-menunggu {
             background: #FFF3CD;
             color: #856404;
         }
 
-        /* Status Proses */
+        /* Status: Berhasil/Terverifikasi */
+        .status-berhasil {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        /* Status: Ditolak */
+        .status-ditolak {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        /* Status: Proses (sedang diverifikasi) */
         .status-proses {
             background: #D1ECF1;
             color: #0C5460;
-        }
-
-        /* Status Selesai */
-        .status-selesai {
-            background: #D4EDDA;
-            color: #155724;
         }
 
         .btn-detail {
@@ -267,7 +273,7 @@
             background: white;
             border-radius: 15px;
             width: 90%;
-            max-width: 700px;
+            max-width: 600px;
             max-height: 90vh;
             overflow-y: auto;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -310,30 +316,7 @@
         }
 
         .modal-body {
-            padding: 30px;
-        }
-
-        .detail-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 30px;
-        }
-
-        .detail-column-left,
-        .detail-column-right {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        .info-group-full-width {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 30px;
-            padding-bottom: 30px;
-            border-bottom: 2px solid #F0E6D2;
+            padding: 25px;
         }
 
         .verification-info {
@@ -345,36 +328,68 @@
         .info-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
         }
 
         .info-label {
             font-size: 13px;
             color: #6B5B47;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 500;
         }
 
         .info-value {
-            font-size: 16px;
+            font-size: 15px;
             color: #2C2C2C;
             font-weight: 600;
         }
 
+        .jumlah-section {
+            margin: 15px 0;
+        }
+
+        .jumlah-section .info-label {
+            display: block;
+            font-size: 13px;
+            color: #6B5B47;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .jumlah-box-input {
+            padding: 14px 20px;
+            background: white;
+            border: 2px solid #D2B48C;
+            border-radius: 8px;
+            text-align: left;
+            font-size: 20px;
+            color: #2C2C2C;
+            font-weight: 700;
+        }
+
         .status-box-small {
             display: inline-block;
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: #FFF3CD;
             color: #856404;
             border-radius: 6px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        .status-box-small.pending {
+        /* Status box colors */
+        .status-box-small.menunggu {
             background: #FFF3CD;
             color: #856404;
+        }
+
+        .status-box-small.berhasil {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .status-box-small.ditolak {
+            background: #F8D7DA;
+            color: #721C24;
         }
 
         .status-box-small.proses {
@@ -382,69 +397,67 @@
             color: #0C5460;
         }
 
-        .status-box-small.selesai {
-            background: #D4EDDA;
-            color: #155724;
+        .action-buttons-verify {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 2px solid #F0E6D2;
         }
 
-        .update-status-section {
-            margin-top: 35px;
-            padding-top: 0px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
+        .action-buttons-verify.disabled {
+            opacity: 0.6;
+            pointer-events: none;
         }
 
-        .update-status-section label {
-            font-size: 15px;
-            color: #8B7355;
-            font-weight: 700;
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .update-status-section select {
-            width: 100%;
-            padding: 16px 18px;
-            border: 2px solid #D2B48C;
-            border-radius: 8px;
-            font-size: 15px;
-            color: #6B5B47;
-            background: white;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-
-        .update-status-section select:focus {
-            outline: none;
-            border-color: #A0826D;
-            box-shadow: 0 0 0 3px rgba(160, 130, 109, 0.2);
-        }
-
-        .btn-update {
-            width: 100%;
-            padding: 16px 18px;
-            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
+        .btn-reject-red {
+            padding: 12px;
+            background: #dc3545;
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .btn-update:hover {
+        .btn-reject-red:hover {
+            background: #c82333;
             transform: translateY(-2px);
-            box-shadow: 0 4px 10px rgba(139, 115, 85, 0.3);
+            box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
         }
 
-        .btn-update:disabled {
+        .btn-reject-red:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        .btn-approve-green {
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve-green:hover {
+            background: #218838;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-approve-green:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+
 
         @media (max-width: 768px) {
             .sidebar {
@@ -457,9 +470,8 @@
                 display: none;
             }
 
-            .detail-container {
+            .action-buttons-verify {
                 grid-template-columns: 1fr;
-                gap: 15px;
             }
         }
     </style>
@@ -482,7 +494,7 @@
                 <span>Data Klien</span>
             </a>
 
-            <a href="pemesanan_admin.html" class="menu-item active">
+            <a href="pemesanan_admin.html" class="menu-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                     <polyline points="14 2 14 8 20 8"/>
@@ -493,7 +505,7 @@
                 <span>Data Pemesanan</span>
             </a>
 
-            <a href="pembayaran_admin.html" class="menu-item">
+            <a href="pembayaran_admin.html" class="menu-item active">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
                     <line x1="1" y1="10" x2="23" y2="10"/>
@@ -534,7 +546,7 @@
 
     <div class="main-content">
         <div class="header">
-            <h1>Manajemen Data Pemesanan</h1>
+            <h1>Manajemen Data Pembayaran</h1>
             <div class="search-bar">
                 <input type="text" id="searchInput" placeholder="Search...">
                 <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -549,49 +561,45 @@
                 <table id="dataTable">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Jenis Paket</th>
-                            <th>Jarak</th>
-                            <th>Alamat Kost</th>
-                            <th>No WA</th>
-                            <th>Jadwal Survey</th>
-                            <th>Waktu</th>
+                            <th>ID Transaksi</th>
+                            <th>ID Pemesanan</th>
+                            <th>Klien</th>
+                            <th>Jumlah</th>
+                            <th>Metode</th>
+                            <th>Bukti Pembayaran</th>
                             <th>Status</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
                         <tr>
-                            <td>01</td>
-                            <td>Paket A</td>
-                            <td>10Km</td>
-                            <td>Jl. Solo</td>
-                            <td>0857535326</td>
-                            <td>15 Desember 2025</td>
-                            <td>10.00 WIB</td>
-                            <td><span class="status-badge status-selesai">Selesai</span></td>
+                            <td>TRX001</td>
+                            <td>ORD001</td>
+                            <td>Budi Santoso</td>
+                            <td>Rp 500.000</td>
+                            <td>Transfer Bank BCA</td>
+                            <td>linkabcdfg</td>
+                            <td><span class="status-badge status-menunggu">Menunggu Verifikasi</span></td>
                             <td><button class="btn-detail" data-id="1">Detail</button></td>
                         </tr>
                         <tr>
-                            <td>02</td>
-                            <td>Paket B</td>
-                            <td>5Km</td>
-                            <td>Jl. Slamet Riyadi</td>
-                            <td>0812345678</td>
-                            <td>16 Desember 2025</td>
-                            <td>14.00 WIB</td>
-                            <td><span class="status-badge status-proses">Proses</span></td>
+                            <td>TRX002</td>
+                            <td>ORD002</td>
+                            <td>Siti Rahmawati</td>
+                            <td>Rp 750.000</td>
+                            <td>E-Wallet (OVO)</td>
+                            <td>linkabcdfg</td>
+                            <td><span class="status-badge status-berhasil">Berhasil</span></td>
                             <td><button class="btn-detail" data-id="2">Detail</button></td>
                         </tr>
                         <tr>
-                            <td>03</td>
-                            <td>Paket A</td>
-                            <td>8Km</td>
-                            <td>Jl. Ahmad Yani</td>
-                            <td>0898765432</td>
-                            <td>17 Desember 2025</td>
-                            <td>09.00 WIB</td>
-                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>TRX003</td>
+                            <td>ORD003</td>
+                            <td>Ahmad Fauzi</td>
+                            <td>Rp 1.200.000</td>
+                            <td>Transfer Bank Mandiri</td>
+                            <td>linkabcdfg</td>
+                            <td><span class="status-badge status-ditolak">Ditolak</span></td>
                             <td><button class="btn-detail" data-id="3">Detail</button></td>
                         </tr>
                     </tbody>
@@ -604,124 +612,101 @@
     <div id="detailModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Detail Pemesanan</h2>
+                <h2>Verifikasi Pembayaran</h2>
                 <button class="close-modal" id="closeBtn">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="detail-container">
-                    <!-- Kolom Kiri -->
-                    <div class="detail-column-left">
-                        <div class="info-group">
-                            <span class="info-label">ID Pemesanan</span>
-                            <span class="info-value" id="detailId">-</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">Jenis Paket</span>
-                            <span class="info-value" id="detailPaket">-</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">Jarak</span>
-                            <span class="info-value" id="detailJarak">-</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">No Whatsapp</span>
-                            <span class="info-value" id="detailWa">-</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">Jadwal Survey</span>
-                            <span class="info-value" id="detailJadwal">-</span>
+                <div class="verification-info">
+                    <div class="info-group">
+                        <span class="info-label">ID Transaksi</span>
+                        <span class="info-value" id="detailId">#TRX5001</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">ID Pesanan</span>
+                        <span class="info-value" id="detailOrder">#ORD1001</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Nama Klien</span>
+                        <span class="info-value" id="detailKlien">Budi Santoso</span>
+                    </div>
+                    <div class="jumlah-section">
+                        <span class="info-label">Jumlah Pembayaran</span>
+                        <div class="jumlah-box-input">
+                            <span id="detailJumlah">Rp 500.000</span>
                         </div>
                     </div>
-
-                    <!-- Kolom Kanan -->
-                    <div class="detail-column-right">
-                        <div class="info-group">
-                            <span class="info-label">Waktu Survey</span>
-                            <span class="info-value" id="detailWaktu">-</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">Catatan</span>
-                            <span class="info-value" id="detailCatatan">-</span>
-                        </div>
-                        <div class="info-group">
-                            <span class="info-label">Status Saat Ini</span>
-                            <span class="status-box-small pending" id="detailStatus">Pending</span>
-                        </div>
+                    <div class="info-group">
+                        <span class="info-label">Metode Pembayaran</span>
+                        <span class="info-value" id="detailMetode">Transfer Bank BCA</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Bukti Pembayaran</span>
+                        <span class="info-value" id="detailBukti">linkabcdfg</span>
+                    </div>
+                    <div class="info-group">
+                        <span class="info-label">Status Saat Ini</span>
+                        <span class="status-box-small menunggu" id="detailStatus">Menunggu Verifikasi</span>
                     </div>
                 </div>
 
-                <!-- Alamat Kost (Full Width) -->
-                <div class="info-group-full-width">
-                    <span class="info-label">Alamat Kost</span>
-                    <span class="info-value" id="detailAlamat">-</span>
-                </div>
-
-                <div class="update-status-section">
-                    <label for="updateStatus">Update Status Pemesanan</label>
-                    <select id="updateStatus">
-                        <option value="pending">Pending</option>
-                        <option value="proses">Proses</option>
-                        <option value="selesai">Selesai</option>
-                    </select>
-                    <button class="btn-update" id="btnUpdate">Simpan Status</button>
+                <div class="action-buttons-verify" id="actionButtons">
+                    <button class="btn-reject-red" id="btnReject">Tolak</button>
+                    <button class="btn-approve-green" id="btnApprove">Setuju</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Status constants
-        const STATUS = {
-            PENDING: 'pending',
-            PROSES: 'proses',
-            SELESAI: 'selesai'
-        };
-
-        // Detail data
+        // Data pembayaran dengan status yang benar
         const detailData = {
             1: {
-                id: '01',
-                paket: 'Paket A',
-                jarak: '10Km',
-                alamat: 'Jl. Solo',
-                wa: '0857535326',
-                jadwal: '15 Desember 2025',
-                waktu: '10.00 WIB',
-                status: 'selesai',
-                catatan: 'Mohon datang tepat waktu'
+                id: 'TRX001',
+                order: 'ORD001',
+                klien: 'Budi Santoso',
+                jumlah: 'Rp 500.000',
+                metode: 'Transfer Bank BCA',
+                bukti: 'linkabcdfg',
+                status: 'menunggu'  // menunggu, berhasil, ditolak, proses
             },
             2: {
-                id: '02',
-                paket: 'Paket B',
-                jarak: '5Km',
-                alamat: 'Jl. Slamet Riyadi',
-                wa: '0812345678',
-                jadwal: '16 Desember 2025',
-                waktu: '14.00 WIB',
-                status: 'proses',
-                catatan: 'Kost dekat kampus'
+                id: 'TRX002',
+                order: 'ORD002',
+                klien: 'Siti Rahmawati',
+                jumlah: 'Rp 750.000',
+                metode: 'E-Wallet (OVO)',
+                bukti: 'linkabcdfg',
+                status: 'berhasil'
             },
             3: {
-                id: '03',
-                paket: 'Paket A',
-                jarak: '8Km',
-                alamat: 'Jl. Ahmad Yani',
-                wa: '0898765432',
-                jadwal: '17 Desember 2025',
-                waktu: '09.00 WIB',
-                status: 'pending',
-                catatan: 'Hubungi sebelum datang'
+                id: 'TRX003',
+                order: 'ORD003',
+                klien: 'Ahmad Fauzi',
+                jumlah: 'Rp 1.200.000',
+                metode: 'Transfer Bank Mandiri',
+                bukti: 'linkabcdfg',
+                status: 'ditolak',
+                alasan_ditolak: 'Nominal tidak sesuai dengan yang diminta'
             }
+        };
+
+        // Status constants
+        const STATUS = {
+            MENUNGGU: 'menunggu',      // Menunggu verifikasi
+            PROSES: 'proses',          // Sedang diverifikasi
+            BERHASIL: 'berhasil',      // Pembayaran terverifikasi dan berhasil
+            DITOLAK: 'ditolak'         // Pembayaran ditolak
         };
 
         // Get elements
         const modal = document.getElementById('detailModal');
         const closeBtn = document.getElementById('closeBtn');
-        const updateStatusSelect = document.getElementById('updateStatus');
-        const btnUpdate = document.getElementById('btnUpdate');
+        const btnReject = document.getElementById('btnReject');
+        const btnApprove = document.getElementById('btnApprove');
+        const actionButtons = document.getElementById('actionButtons');
         let currentId = null;
 
-        // Event listener untuk button detail
+        // Event listener untuk semua tombol detail menggunakan event delegation
         document.getElementById('tableBody').addEventListener('click', function(e) {
             if (e.target.classList.contains('btn-detail')) {
                 const id = e.target.getAttribute('data-id');
@@ -730,12 +715,13 @@
             }
         });
 
-        // Fungsi untuk mendapatkan status text
+        // Fungsi untuk mendapatkan status text yang lebih user-friendly
         function getStatusText(status) {
             const statusMap = {
-                'pending': 'Pending',
-                'proses': 'Proses',
-                'selesai': 'Selesai'
+                'menunggu': 'Menunggu Verifikasi',
+                'proses': 'Sedang Diverifikasi',
+                'berhasil': 'Berhasil',
+                'ditolak': 'Ditolak'
             };
             return statusMap[status] || status;
         }
@@ -743,26 +729,26 @@
         // Fungsi untuk mendapatkan status class
         function getStatusClass(status) {
             const classMap = {
-                'pending': 'pending',
+                'menunggu': 'menunggu',
                 'proses': 'proses',
-                'selesai': 'selesai'
+                'berhasil': 'berhasil',
+                'ditolak': 'ditolak'
             };
             return classMap[status] || status;
         }
 
-        // Show detail
+        // Fungsi show detail
         function showDetail(id) {
             const data = detailData[id];
             if (!data) return;
 
+            // Update modal content
             document.getElementById('detailId').textContent = data.id;
-            document.getElementById('detailPaket').textContent = data.paket;
-            document.getElementById('detailJarak').textContent = data.jarak;
-            document.getElementById('detailAlamat').textContent = data.alamat;
-            document.getElementById('detailWa').textContent = data.wa;
-            document.getElementById('detailJadwal').textContent = data.jadwal;
-            document.getElementById('detailWaktu').textContent = data.waktu;
-            document.getElementById('detailCatatan').textContent = data.catatan;
+            document.getElementById('detailOrder').textContent = data.order;
+            document.getElementById('detailKlien').textContent = data.klien;
+            document.getElementById('detailJumlah').textContent = data.jumlah;
+            document.getElementById('detailMetode').textContent = data.metode;
+            document.getElementById('detailBukti').textContent = data.bukti;
             
             const statusBox = document.getElementById('detailStatus');
             const statusText = getStatusText(data.status);
@@ -772,17 +758,26 @@
             statusBox.className = 'status-box-small ' + statusClass;
 
             // Handle status-specific UI
-            handleStatusUI(data.status);
+            handleStatusUI(data.status, data);
 
             // Show modal
             modal.classList.add('show');
             document.body.style.overflow = 'hidden';
         }
 
-        // Handle UI berdasarkan status
-        function handleStatusUI(status) {
-            // Set dropdown value sesuai status
-            updateStatusSelect.value = status;
+        // Fungsi untuk handle UI berdasarkan status
+        function handleStatusUI(status, data) {
+            // Jika status BERHASIL atau DITOLAK: disable tolak & setuju
+            if (status === STATUS.BERHASIL || status === STATUS.DITOLAK) {
+                btnReject.disabled = true;
+                btnApprove.disabled = true;
+                actionButtons.classList.add('disabled');
+            } else {
+                // Status MENUNGGU atau PROSES: semua aktif
+                btnReject.disabled = false;
+                btnApprove.disabled = false;
+                actionButtons.classList.remove('disabled');
+            }
         }
 
         // Close modal
@@ -799,36 +794,57 @@
             }
         });
 
-        // Tombol Update Status
-        btnUpdate.addEventListener('click', function() {
-            const newStatus = updateStatusSelect.value;
-            
-            if (confirm('Apakah Anda yakin ingin mengubah status menjadi "' + getStatusText(newStatus) + '"?')) {
-                // Update status
-                detailData[currentId].status = newStatus;
+        // Tombol Tolak
+        btnReject.addEventListener('click', function() {
+            const reason = prompt('Masukkan alasan penolakan pembayaran:');
+            if (reason && reason.trim() !== '') {
+                // Ubah status ke ditolak
+                detailData[currentId].status = STATUS.DITOLAK;
+                detailData[currentId].alasan_ditolak = reason;
                 
                 // Update tabel
-                updateTableStatus(currentId, newStatus);
+                updateTableStatus(currentId, STATUS.DITOLAK);
                 
                 // Update modal
                 const statusBox = document.getElementById('detailStatus');
-                const statusText = getStatusText(newStatus);
-                const statusClass = getStatusClass(newStatus);
+                statusBox.textContent = 'Ditolak';
+                statusBox.className = 'status-box-small ditolak';
                 
-                statusBox.textContent = statusText;
-                statusBox.className = 'status-box-small ' + statusClass;
+                handleStatusUI(STATUS.DITOLAK, detailData[currentId]);
                 
-                alert('✅ Status berhasil diupdate menjadi "' + statusText + '"');
+                alert('✅ Pembayaran berhasil ditolak.\nAlasan: ' + reason);
+            } else if (reason !== null) {
+                alert('⚠️ Harap masukkan alasan penolakan!');
             }
         });
 
-        // Update status di tabel
+        // Tombol Setuju
+        btnApprove.addEventListener('click', function() {
+            if (confirm('Apakah Anda yakin ingin menyetujui pembayaran ini?')) {
+                // Ubah status ke berhasil
+                detailData[currentId].status = STATUS.BERHASIL;
+                
+                // Update tabel
+                updateTableStatus(currentId, STATUS.BERHASIL);
+                
+                // Update modal
+                const statusBox = document.getElementById('detailStatus');
+                statusBox.textContent = 'Berhasil';
+                statusBox.className = 'status-box-small berhasil';
+                
+                handleStatusUI(STATUS.BERHASIL, detailData[currentId]);
+                
+                alert('✅ Pembayaran berhasil disetujui!');
+            }
+        });
+
+        // Fungsi untuk update status di tabel
         function updateTableStatus(id, newStatus) {
             const rows = document.getElementById('tableBody').getElementsByTagName('tr');
             const rowIndex = parseInt(id) - 1;
             
             if (rows[rowIndex]) {
-                const statusCell = rows[rowIndex].cells[7];
+                const statusCell = rows[rowIndex].cells[6];
                 const statusText = getStatusText(newStatus);
                 const statusClass = getStatusClass(newStatus);
                 statusCell.innerHTML = '<span class="status-badge status-' + statusClass + '">' + statusText + '</span>';
