@@ -1,73 +1,64 @@
 <?php
 require_once 'config.php';
 
-// Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 $error = '';
 $success = '';
-$email_input = ''; 
+$username_input = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // 1. Sanitize & Retrieve Inputs
-    $email_input = filter_var(trim($_POST['email']), FILTER_SANITIZE_EMAIL);
+    $username_input = trim($_POST['username']); 
+    $email_input = trim($_POST['email']);
     $password = $_POST['password'];
 
-    // 2. Validate Empty
-    if (empty($email_input) || empty($password)) {
-        $error = 'Silakan masukkan email dan password.';
+    if (empty($username_input) || empty($email_input) || empty($password)) {
+        $error = 'Semua field (Username, Email, Password) harus diisi!';
     } else {
-        // 3. Authenticate User (Klien) ONLY
-        $stmt = $conn->prepare("SELECT id_klien, nama_lengkap, email, no_wa, password FROM klien WHERE email = ?");
-        $stmt->bind_param("s", $email_input);
+        // Authenticate Admin: Must match BOTH Username AND Email
+        $stmt = $conn->prepare("SELECT id_admin, username, password FROM admin WHERE username = ? AND email = ?");
+        $stmt->bind_param("ss", $username_input, $email_input);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
-            $db_password = $user['password'];
+            $admin = $result->fetch_assoc();
+            $db_password = $admin['password'];
             $valid_login = false;
 
-            // Check Plain Text Password ONLY (As requested)
+            // Check Plain Text Password ONLY (As requested for consistency)
+            // Ideally this should be password_verify(), but we stick to user's existing pattern.
             if ($password === $db_password) {
                 $valid_login = true;
             }
 
             if ($valid_login) {
-                // Security: Regenerate Session
                 session_regenerate_id(true);
+                $_SESSION['admin_logged_in'] = true;
+                $_SESSION['role'] = 'admin'; // Added for compatibility
+                $_SESSION['admin_id'] = $admin['id_admin'];
+                $_SESSION['admin_name'] = $admin['username'];
 
-                $_SESSION['user_logged_in'] = true;
-                $_SESSION['user_id'] = $user['id_klien'];
-                $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
-                $_SESSION['email'] = $user['email'];
-                $_SESSION['no_wa'] = $user['no_wa'];
-                // Global flag for legacy support if needed, but prefer specific
-                $_SESSION['isLoggedIn'] = true; 
-
-                $success = 'Login Berhasil! Mengalihkan...';
-                
-                // Javascript Redirect for reliability
+                $success = 'Login Admin Berhasil!';
                 echo "<script>
                         setTimeout(function() {
-                            window.location.href = 'user/dashboard.php';
+                            window.location.href = 'admin/dashboard.php';
                         }, 800);
                       </script>";
             } else {
-                $error = 'Password salah.';
+                $error = 'Password salah!';
             }
         } else {
-            $error = 'Akun tidak ditemukan. Silakan daftar.';
+            $error = 'Akun admin tidak ditemukan!';
         }
         $stmt->close();
     }
 }
 
-// Redirect if already logged in as User
-if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
-    header("Location: user/dashboard.php");
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+    header("Location: admin/dashboard.php");
     exit();
 }
 ?>
@@ -76,7 +67,7 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login User - Survey Kost Solo</title>
+    <title>Masuk Admin - Survey Kost Solo</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -95,13 +86,14 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
         }
         .left-panel::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background: url('https://img.freepik.com/free-vector/city-skyline-concept-illustration_114360-8923.jpg?w=1380&t=st=1703487000~exp=1703487600~hmac=x');
+            background: url('https://img.freepik.com/free-vector/city-skyline-concept-illustration_114360-8923.jpg');
             background-size: cover; opacity: 0.1; mix-blend-mode: overlay;
         }
         .brand-content { position: relative; z-index: 2; animation: fadeIn 1s ease-out; }
         .logo-img { width: 120px; margin-bottom: 20px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
         .brand-title { font-size: 32px; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px; }
         .brand-desc { font-size: 16px; opacity: 0.9; max-width: 400px; margin: 0 auto; line-height: 1.6; }
+        .brand-subtitle { font-size: 14px; opacity: 0.8; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; }
         
         /* Right Panel - Form */
         .right-panel {
@@ -169,8 +161,9 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
         <div class="left-panel">
             <div class="brand-content">
                 <img src="logo1.png" alt="Logo" class="logo-img">
+                <div class="brand-subtitle">PANEL ADMIN</div>
                 <h1 class="brand-title">SURVEY KOST</h1>
-                <p class="brand-desc">Solusi Survey Kost Terpercaya di Solo Raya. Temukan kost impianmu tanpa ribet.</p>
+                <p class="brand-desc">Kelola data pemesanan dan pembayaran dengan mudah dan aman.</p>
             </div>
         </div>
         
@@ -178,36 +171,46 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
         <div class="right-panel">
             <div class="login-wrapper">
                 <div class="form-header">
-                    <h2>Selamat Datang!</h2>
-                    <p>Silakan masuk untuk melanjutkan.</p>
+                    <h2>Masuk Admin</h2>
+                    <p>Masukkan kredensial Anda untuk masuk.</p>
                 </div>
                 
-                <?php if ($error): ?>
+                <?php if (!empty($error)): ?>
                     <div class="alert alert-error">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                         <span><?php echo htmlspecialchars($error); ?></span>
                     </div>
                 <?php endif; ?>
-                <?php if ($success): ?>
+                <?php if (!empty($success)): ?>
                     <div class="alert alert-success">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
                         <span><?php echo htmlspecialchars($success); ?></span>
                     </div>
                 <?php endif; ?>
 
-                <form method="POST" action="">
+                <form method="POST">
+                    <div class="input-group">
+                        <label>USERNAME</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                            </span>
+                            <input type="text" name="username" class="input-field" placeholder="Masukkan username" required value="<?php echo htmlspecialchars($username_input); ?>">
+                        </div>
+                    </div>
+
                     <div class="input-group">
                         <label>EMAIL</label>
                         <div class="input-wrapper">
                             <span class="input-icon">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
                             </span>
-                            <input type="email" name="email" class="input-field" placeholder="nama@email.com" value="<?php echo htmlspecialchars($email_input); ?>" required>
+                            <input type="email" name="email" class="input-field" placeholder="Masukkan email" required>
                         </div>
                     </div>
                     
                     <div class="input-group">
-                        <label>PASSWORD</label>
+                        <label>KATA SANDI</label>
                         <div class="input-wrapper">
                             <span class="input-icon">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -219,9 +222,7 @@ if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) 
                     <button type="submit" class="btn-submit">MASUK SEKARANG</button>
                     
                     <div class="auth-footer">
-                         Belum punya akun? <a href="register.php">Daftar disini</a>
-                         <br><br>
-                         <a href="login_admin.php" style="font-size:13px; color:#A1887F;">Masuk sebagai Admin</a>
+                         Bukan Admin? <a href="login.php">Masuk Di Sini</a>
                     </div>
                 </form>
             </div>

@@ -3,7 +3,7 @@
 $servername = "localhost";
 $username = "root";
 $password = ""; // Sesuaikan dengan password MySQL Anda
-$database = "jasa_survey";
+$database = "jasa_survey1";
 
 // Membuat koneksi
 $conn = new mysqli($servername, $username, $password, $database);

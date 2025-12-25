@@ -4,56 +4,68 @@ require_once 'config.php';
 $error = '';
 $success = '';
 
+// Sticky inputs
+$input_nama = '';
+$input_email = '';
+$input_wa = '';
+
+// Clear previous user session to prevent confusion
+if (isset($_SESSION['user_logged_in'])) {
+    unset($_SESSION['user_logged_in']);
+    unset($_SESSION['user_id']);
+    unset($_SESSION['nama_lengkap']);
+    unset($_SESSION['isLoggedIn']); // Clear legacy flag
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Mengambil dan membersihkan input
     $namaLengkap = trim($_POST['namaLengkap']);
     $email = trim($_POST['email']);
     $whatsapp = trim($_POST['whatsapp']);
     $password = $_POST['password'];
     $confirmPassword = $_POST['confirmPassword'];
 
-    // Validasi
+    $input_nama = $namaLengkap;
+    $input_email = $email;
+    $input_wa = $whatsapp;
+
     if (empty($namaLengkap) || empty($email) || empty($whatsapp) || empty($password) || empty($confirmPassword)) {
-        $error = 'Semua field harus diisi!';
-    } elseif (strlen($password) < 6) {
-        $error = 'Password minimal 6 karakter!';
-    } elseif ($password !== $confirmPassword) {
-        $error = 'Password dan konfirmasi password tidak sama!';
-    } elseif (!preg_match('/^08[0-9]{8,11}$/', $whatsapp)) {
-        $error = 'Format nomor WhatsApp tidak valid! Harus diawali 08 dan 10-13 digit.';
+        $error = 'Harap isi semua kolom yang tersedia.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = 'Format email tidak valid!';
+        $error = 'Format email tidak valid (contoh: user@email.com).';
+    } elseif (!preg_match('/^[0-9]{10,14}$/', $whatsapp)) {
+        $error = 'Nomor WhatsApp harus angka valid (10-14 digit).';
+    } elseif (strlen($password) < 8) {
+        $error = 'Password harus memiliki minimal 8 karakter.';
+    } elseif ($password !== $confirmPassword) {
+        $error = 'Konfirmasi password tidak cocok.';
     } else {
-        // Cek apakah email sudah terdaftar
-        $sql_check = "SELECT id_klien FROM klien WHERE email = ?";
-        $stmt_check = $conn->prepare($sql_check);
-        $stmt_check->bind_param("s", $email);
+        // Check Klien Only
+        $stmt_check = $conn->prepare("SELECT id_klien FROM klien WHERE email = ? OR no_wa = ?");
+        $stmt_check->bind_param("ss", $email, $whatsapp);
         $stmt_check->execute();
-        $result_check = $stmt_check->get_result();
+        $res_check = $stmt_check->get_result();
 
-        if ($result_check->num_rows > 0) {
-            $error = 'Email sudah terdaftar! Silakan gunakan email lain atau login.';
+        if ($res_check->num_rows > 0) {
+            $error = 'Email atau Nomor WhatsApp sudah terdaftar. Silakan login.';
         } else {
-            // Hash password untuk keamanan
-            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            // Insert Plain Text Password (As requested)
+            // Note: Not recommended for security, but requested by user.
+            $stmt_insert = $conn->prepare("INSERT INTO klien (nama_lengkap, email, no_wa, password) VALUES (?, ?, ?, ?)");
+            $stmt_insert->bind_param("ssss", $namaLengkap, $email, $whatsapp, $password);
 
-            // Insert ke database
-            $sql_insert = "INSERT INTO klien (nama_lengkap, email, no_wa, password) VALUES (?, ?, ?, ?)";
-            $stmt_insert = $conn->prepare($sql_insert);
-            
-            if (!$stmt_insert) {
-                $error = "Error: " . $conn->error;
+            if ($stmt_insert->execute()) {
+                $success = 'Registrasi Berhasil! Mengalihkan ke login...';
+                // Clear fields
+                $input_nama = ''; $input_email = ''; $input_wa = '';
+                echo "<script>
+                        setTimeout(function() {
+                            window.location.href = 'login.php';
+                        }, 2000);
+                      </script>";
             } else {
-                $stmt_insert->bind_param("ssss", $namaLengkap, $email, $whatsapp, $hashed_password);
-                
-                if ($stmt_insert->execute()) {
-                    $success = 'Registrasi berhasil! Mengalihkan ke halaman login...';
-                    header("refresh:2;url=login.php");
-                } else {
-                    $error = "Error: " . $stmt_insert->error;
-                }
-                $stmt_insert->close();
+                $error = 'Terjadi kesalahan sistem. Coba lagi nanti.';
             }
+            $stmt_insert->close();
         }
         $stmt_check->close();
     }
@@ -64,436 +76,189 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Sistem Informasi Pemesanan Jasa Survey Kost</title>
+    <title>Register - Survey Kost Solo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Outfit', sans-serif; height: 100vh; overflow: hidden; }
+        
+        .split-screen {
+            display: flex; height: 100%;
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #FFF8F0;
-            min-height: 100vh;
+        
+        /* Left Panel - Branding */
+        .left-panel {
+            flex: 1; background: linear-gradient(135deg, #8B7355 0%, #6D5B45 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            color: white; padding: 40px; text-align: center;
+            position: relative; overflow: hidden;
         }
-
-        .container {
-            background: white;
-            width: 100%;
-            max-width: 100%;
-            min-height: 100vh;
-            border-radius: 0;
-            box-shadow: none;
-            overflow: auto;
-            display: flex;
-            flex-direction: column;
+        .left-panel::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: url('https://img.freepik.com/free-vector/city-skyline-concept-illustration_114360-8923.jpg');
+            background-size: cover; opacity: 0.1; mix-blend-mode: overlay;
         }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
-            color: #FFF8F0;
-            padding: 20px 30px;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        .brand-content { position: relative; z-index: 2; animation: fadeIn 1s ease-out; }
+        .logo-img { width: 120px; margin-bottom: 20px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2)); }
+        .brand-title { font-size: 32px; font-weight: 700; margin-bottom: 10px; letter-spacing: 0.5px; }
+        .brand-desc { font-size: 16px; opacity: 0.9; max-width: 400px; margin: 0 auto; line-height: 1.6; }
+        
+        /* Right Panel - Form */
+        .right-panel {
+            flex: 1; background: #FFFCF9;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 40px; position: relative;
         }
-
-        .back-button {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #FFF8F0;
-            text-decoration: none;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-            padding: 8px;
-            border-radius: 8px;
+        /* Wider wrapper for register form */
+        .login-wrapper { width: 100%; max-width: 480px; animation: slideUp 0.8s ease-out; }
+        
+        .form-header { margin-bottom: 30px; text-align: left; }
+        .form-header h2 { font-size: 28px; color: #5D4037; font-weight: 700; margin-bottom: 8px; }
+        .form-header p { color: #8D6E63; font-size: 15px; }
+        
+        .input-group { margin-bottom: 15px; position: relative; }
+        .input-group label { display: block; font-size: 12px; font-weight: 700; color: #8B7355; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .input-wrapper { position: relative; }
+        .input-field {
+            width: 100%; padding: 12px 16px;
+            border: 2px solid #E5D5C5; border-radius: 10px;
+            background: white; font-family: inherit; font-size: 14px;
+            transition: all 0.3s; color: #5D4037;
         }
-
-        .back-button:hover {
-            background: rgba(255, 248, 240, 0.1);
-            transform: translateY(-50%) translateX(-3px);
+        .input-field:focus {
+            border-color: #8B7355; outline: none; box-shadow: 0 4px 12px rgba(139, 115, 85, 0.15);
         }
-
-        .back-button svg {
-            width: 28px;
-            height: 28px;
+        
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .btn-submit {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #8B7355 0%, #6D5B45 100%);
+            color: white; border: none; border-radius: 12px;
+            font-weight: 600; font-size: 16px; cursor: pointer;
+            transition: 0.3s; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
-
-        .header h1 {
-            font-size: 22px;
-            margin: 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139, 115, 85, 0.3); }
+        
+        .auth-footer { text-align: center; margin-top: 25px; font-size: 14px; color: #8D6E63; }
+        .auth-footer a { color: #8B7355; text-decoration: none; font-weight: 600; }
+        .auth-footer a:hover { text-decoration: underline; }
+        
+        .alert {
+            padding: 12px 16px; border-radius: 10px; font-size: 14px; margin-bottom: 25px;
+            display: flex; align-items: center; gap: 10px;
         }
-
-        /* Container */
-        .content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 50px 40px;
-            width: 100%;
-        }
-
-        /* Register Card */
-        .register-card {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(139, 115, 85, 0.1);
-            margin-bottom: 25px;
-            border: 2px solid #D2B48C;
-        }
-
-        .register-card h2 {
-            color: #8B7355;
-            font-size: 20px;
-            margin-bottom: 25px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #F5DEB3;
-        }
-
-        .register-header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: slideUp 0.6s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .register-header h2 {
-            font-size: 28px;
-            color: #8B7355;
-            font-weight: 700;
-            margin-bottom: 8px;
-            border: none;
-            padding: 0;
-        }
-
-        .register-header p {
-            font-size: 14px;
-            color: #A0826D;
-            font-weight: 500;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 10px;
-            color: #8B7355;
-            font-size: 14px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        input[type="text"],
-        input[type="email"],
-        input[type="tel"],
-        input[type="password"] {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #D2B48C;
-            border-radius: 10px;
-            font-size: 15px;
-            color: #8B7355;
-            background: white;
-            transition: all 0.3s ease;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="tel"]:focus,
-        input[type="password"]:focus {
-            outline: none;
-            border-color: #8B7355;
-            box-shadow: 0 0 0 4px rgba(139, 115, 85, 0.1);
-            background: #FFF8F0;
-        }
-
-        input[type="text"]::placeholder,
-        input[type="email"]::placeholder,
-        input[type="tel"]::placeholder,
-        input[type="password"]::placeholder {
-            color: #D2B48C;
-        }
-
-        input.password-match-error {
-            border-left: 4px solid #f44336;
-        }
-
-        input.password-match-success {
-            border-left: 4px solid #4caf50;
-        }
-
-        .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #8B7355 0%, #A0826D 100%);
-            color: #FFF8F0;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 8px 20px rgba(139, 115, 85, 0.3);
-            margin-top: 20px;
-            margin-bottom: 25px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 30px rgba(139, 115, 85, 0.4);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .login-link {
-            text-align: center;
-            font-size: 14px;
-            color: #8B7355;
-            padding-top: 20px;
-            border-top: 1px solid #F0E6D2;
-        }
-
-        .login-link span {
-            display: block;
-            margin-bottom: 12px;
-        }
-
-        .login-link a {
-            display: inline-block;
-            background: transparent;
-            color: #A0826D;
-            border: 2px solid #D2B48C;
-            padding: 10px 30px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 13px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .login-link a:hover {
-            background: #FFF8F0;
-            border-color: #8B7355;
-            color: #8B7355;
-        }
-
-        .success-message {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: block;
-            border-left: 4px solid #2e7d32;
-            animation: slideDown 0.3s ease;
-            font-size: 13px;
-        }
-
-        .error-message {
-            background: #ffebee;
-            color: #c62828;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            text-align: center;
-            display: block;
-            border-left: 4px solid #c62828;
-            animation: slideDown 0.3s ease;
-            font-size: 13px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .content {
-                padding: 40px 20px;
-            }
-
-            .register-header h2 {
-                font-size: 24px;
-            }
-        }
-
-        @media (max-width: 600px) {
-            .header {
-                padding: 15px 20px;
-            }
-
-            .header h1 {
-                font-size: 20px;
-            }
-
-            .back-button {
-                left: 10px;
-                font-size: 14px;
-                padding: 6px;
-            }
-
-            .back-button svg {
-                width: 24px;
-                height: 24px;
-            }
-
-            .content {
-                padding: 25px 20px;
-            }
-
-            .register-card,
-            .register-header {
-                padding: 20px;
-            }
-
-            .register-header h2 {
-                font-size: 22px;
-            }
-
-            input[type="text"],
-            input[type="email"],
-            input[type="tel"],
-            input[type="password"] {
-                padding: 12px 14px;
-                font-size: 14px;
-            }
-
-            .submit-btn {
-                padding: 12px;
-                font-size: 14px;
-            }
-
-            .login-link a {
-                padding: 8px 20px;
-                font-size: 12px;
-            }
-
-            .form-group {
-                margin-bottom: 18px;
-            }
+        .alert-error { background: #FFEBEE; color: #C62828; border-left: 4px solid #C62828; }
+        .alert-success { background: #E8F5E9; color: #2E7D32; border-left: 4px solid #2E7D32; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 900px) {
+            .split-screen { flex-direction: column; }
+            .left-panel { flex: 0.3; min-height: 200px; padding: 20px; }
+            .brand-img { width: 80px; }
+            .brand-title { font-size: 24px; }
+            .right-panel { flex: 0.7; padding: 30px; display: block; overflow-y: auto; }
+            .login-wrapper { max-width: 100%; margin: 0 auto; }
+            body { overflow: auto; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <a href="javascript:history.back()" class="back-button">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-            </a>
-            <h1>Register</h1>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <div class="register-header">
-                <h2>Buat Akun Baru</h2>
-                <p>Daftar dan mulai pesan survey kost impian Anda</p>
+    <div class="split-screen">
+        <!-- Brand Side -->
+        <div class="left-panel">
+            <div class="brand-content">
+                <img src="logo1.png" alt="Logo" class="logo-img">
+                <h1 class="brand-title">BUAT AKUN</h1>
+                <p class="brand-desc">Bergabunglah dan temukan tempat tinggal nyaman di Solo Raya.</p>
             </div>
-
-            <div class="register-card">
-                <?php if ($error): ?>
-                    <div class="error-message"><?php echo htmlspecialchars($error); ?></div>
-                <?php endif; ?>
+        </div>
+        
+        <!-- Form Side -->
+        <div class="right-panel">
+            <div class="login-wrapper">
+                <div class="form-header">
+                    <h2>Registrasi Klien</h2>
+                    <p>Isi data diri Anda dengan benar.</p>
+                </div>
                 
+                <?php if ($error): ?>
+                    <div class="alert alert-error">
+                        <span>⚠ <?php echo htmlspecialchars($error); ?></span>
+                    </div>
+                <?php endif; ?>
                 <?php if ($success): ?>
-                    <div class="success-message"><?php echo htmlspecialchars($success); ?></div>
+                    <div class="alert alert-success">
+                        <span>✅ <?php echo htmlspecialchars($success); ?></span>
+                    </div>
                 <?php endif; ?>
 
-                <form id="registerForm" method="POST" action="">
-                    <div class="form-group">
-                        <label for="namaLengkap">Nama Lengkap</label>
-                        <input type="text" id="namaLengkap" name="namaLengkap" placeholder="Masukkan nama lengkap" required>
+                <form method="POST" action="">
+                    <div class="input-group">
+                        <label>NAMA LENGKAP</label>
+                        <input type="text" name="namaLengkap" class="input-field" placeholder="Contoh: Budi Santoso" value="<?php echo htmlspecialchars($input_nama); ?>" required>
                     </div>
 
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="email@gmail.com" required>
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label>EMAIL</label>
+                            <input type="email" name="email" class="input-field" placeholder="nama@email.com" value="<?php echo htmlspecialchars($input_email); ?>" required>
+                        </div>
+                        <div class="input-group">
+                            <label>WHATSAPP</label>
+                            <input type="tel" name="whatsapp" class="input-field" placeholder="08xxxxxxxxxx" value="<?php echo htmlspecialchars($input_wa); ?>" required>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-2">
+                        <div class="input-group">
+                            <label>PASSWORD</label>
+                            <input type="password" name="password" id="pass" class="input-field" placeholder="Min. 8 Karakter" required>
+                        </div>
+                        <div class="input-group">
+                            <label>KONFIRMASI</label>
+                            <input type="password" name="confirmPassword" id="cpass" class="input-field" placeholder="Ulangi Password" required>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="whatsapp">No. WhatsApp</label>
-                        <input type="tel" id="whatsapp" name="whatsapp" placeholder="08xxxxxxxxxx" required>
-                    </div>
+                    <p id="match-msg" style="font-size:12px; margin-top:-10px; margin-bottom:15px; height:15px;"></p>
 
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password" placeholder="••••••••" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="confirmPassword">Konfirmasi Password</label>
-                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••" required>
-                    </div>
-
-                    <button type="submit" class="submit-btn">Daftar</button>
-
-                    <div class="login-link">
-                        <span>Sudah punya akun?</span>
-                        <a href="login.php">Masuk Di Sini</a>
+                    <button type="submit" class="btn-submit">DAFTAR SEKARANG</button>
+                    
+                    <div class="auth-footer">
+                         Sudah punya akun? <a href="login.php">Masuk disini</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
+    
     <script>
-        // Real-time password match indicator
-        document.getElementById('confirmPassword').addEventListener('input', function() {
-            const password = document.getElementById('password').value;
-            const confirmPassword = this.value;
-            
-            this.classList.remove('password-match-error');
-            this.classList.remove('password-match-success');
-            
-            if (confirmPassword) {
-                if (password !== confirmPassword) {
-                    this.classList.add('password-match-error');
+        const pass = document.getElementById('pass');
+        const cpass = document.getElementById('cpass');
+        const msg = document.getElementById('match-msg');
+        
+        function check() {
+            if(cpass.value.length > 0) {
+                if(pass.value !== cpass.value) {
+                    msg.style.color = '#D32F2F';
+                    msg.innerText = 'Password tidak cocok ❌';
+                    cpass.style.borderColor = '#D32F2F';
                 } else {
-                    this.classList.add('password-match-success');
+                    msg.style.color = '#2E7D32';
+                    msg.innerText = 'Password cocok ✅';
+                    cpass.style.borderColor = '#2E7D32';
                 }
+            } else {
+                msg.innerText = '';
+                cpass.style.borderColor = '#E5D5C5';
             }
-        });
+        }
+        
+        pass.addEventListener('input', check);
+        cpass.addEventListener('input', check);
     </script>
 </body>
 </html>
