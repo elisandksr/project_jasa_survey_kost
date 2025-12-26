@@ -101,9 +101,9 @@ if ($result->num_rows > 0) {
         
         <ul class="nav-links">
             <li><a href="dashboard.php"><span class="icon">📊</span> Dashboard</a></li>
-            <li><a href="pengguna.php"><span class="icon">👥</span> Data Pengguna</a></li>
-            <li><a href="pemesanan.php"><span class="icon">📝</span> Pemesanan</a></li>
-            <li><a href="pembayaran.php" class="active"><span class="icon">💳</span> Pembayaran</a></li>
+            <li><a href="pengguna.php"><span class="icon">👥</span> Data Klien</a></li>
+            <li><a href="pemesanan.php"><span class="icon">📝</span> Data Pemesanan</a></li>
+            <li><a href="pembayaran.php" class="active"><span class="icon">💳</span> Data Pembayaran</a></li>
             <li><a href="survey.php"><span class="icon">📋</span> Hasil Survey</a></li>
             <li><a href="laporan.php"><span class="icon">📄</span> Laporan</a></li>
             <li><a href="../logout.php" class="logout-btn"><span class="icon">🚪</span> Keluar</a></li>
@@ -179,7 +179,7 @@ if ($result->num_rows > 0) {
             <div class="modal-body" style="padding:25px; background:white;">
                 
                 <div style="margin-bottom:12px;">
-                    <label style="font-size:11px; color:#999; text-transform:uppercase; display:block; margin-bottom:4px;">ID Transaksi</label>
+                    <label style="font-size:11px; color:#999; text-transform:uppercase; display:block; margin-bottom:4px;">ID Pembayaran</label>
                     <div style="font-weight:700; color:#333;" id="dId">-</div>
                 </div>
 

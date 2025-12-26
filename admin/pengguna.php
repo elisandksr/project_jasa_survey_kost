@@ -49,9 +49,9 @@ $result = $conn->query($sql);
         
         <ul class="nav-links">
             <li><a href="dashboard.php"><span class="icon">📊</span> Dashboard</a></li>
-            <li><a href="pengguna.php" class="active"><span class="icon">👥</span> Data Pengguna</a></li>
-            <li><a href="pemesanan.php"><span class="icon">📝</span> Pemesanan</a></li>
-            <li><a href="pembayaran.php"><span class="icon">💳</span> Pembayaran</a></li>
+            <li><a href="pengguna.php" class="active"><span class="icon">👥</span> Data Klien</a></li>
+            <li><a href="pemesanan.php"><span class="icon">📝</span> Data Pemesanan</a></li>
+            <li><a href="pembayaran.php"><span class="icon">💳</span> Data Pembayaran</a></li>
             <li><a href="survey.php"><span class="icon">📋</span> Hasil Survey</a></li>
             <li><a href="laporan.php"><span class="icon">📄</span> Laporan</a></li>
             <li><a href="../logout.php" class="logout-btn"><span class="icon">🚪</span> Keluar</a></li>

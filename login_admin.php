@@ -171,7 +171,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         <div class="right-panel">
             <div class="login-wrapper">
                 <div class="form-header">
-                    <h2>Masuk Admin</h2>
+                    <h2>Login Admin</h2>
                     <p>Masukkan kredensial Anda untuk masuk.</p>
                 </div>
                 
@@ -210,7 +210,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
                     </div>
                     
                     <div class="input-group">
-                        <label>KATA SANDI</label>
+                        <label>PASSWORD</label>
                         <div class="input-wrapper">
                             <span class="input-icon">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>

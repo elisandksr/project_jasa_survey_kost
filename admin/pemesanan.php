@@ -111,9 +111,9 @@ if ($result && $result->num_rows > 0) {
         
         <ul class="nav-links">
             <li><a href="dashboard.php"><span class="icon">📊</span> Dashboard</a></li>
-            <li><a href="pengguna.php"><span class="icon">👥</span> Data Pengguna</a></li>
-            <li><a href="pemesanan.php" class="active"><span class="icon">📝</span> Pemesanan</a></li>
-            <li><a href="pembayaran.php"><span class="icon">💳</span> Pembayaran</a></li>
+            <li><a href="pengguna.php"><span class="icon">👥</span> Data Klien</a></li>
+            <li><a href="pemesanan.php" class="active"><span class="icon">📝</span> Data Pemesanan</a></li>
+            <li><a href="pembayaran.php"><span class="icon">💳</span> Data Pembayaran</a></li>
             <li><a href="survey.php"><span class="icon">📋</span> Hasil Survey</a></li>
             <li><a href="laporan.php"><span class="icon">📄</span> Laporan</a></li>
             <li><a href="../logout.php" class="logout-btn"><span class="icon">🚪</span> Keluar</a></li>
@@ -138,7 +138,7 @@ if ($result && $result->num_rows > 0) {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Kategori Layanan</th>
+                        <th>Jenis Paket</th>
                         <th>Jarak</th>
                         <th>Alamat Kost</th>
                         <th>No WA</th>
