@@ -267,10 +267,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <script>
         // Set min date to tomorrow
+        // const dateInput = document.getElementById('tanggal_survey');
+        // const tomorrow = new Date();
+        // tomorrow.setDate(tomorrow.getDate() + 1);
+        // dateInput.min = tomorrow.toISOString().split('T')[0];
+        // ALLOW TODAY:
         const dateInput = document.getElementById('tanggal_survey');
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        dateInput.min = tomorrow.toISOString().split('T')[0];
 
         // Format Rupiah (util)
         const formatRupiah = (money) => {

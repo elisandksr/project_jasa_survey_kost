@@ -96,6 +96,7 @@ checkAndAddColumn($conn, 'pemesanan', 'budget_range', 'VARCHAR(50) DEFAULT "-"')
 checkAndAddColumn($conn, 'pemesanan', 'fasilitas_request', 'TEXT');
 // checkAndAddColumn($conn, 'pemesanan', 'status', "ENUM('Menunggu Pembayaran', 'Verifikasi Pembayaran', 'Dijadwalkan', 'Selesai', 'Dibatalkan') DEFAULT 'Menunggu Pembayaran'");
 checkAndAddColumn($conn, 'pemesanan', 'harga', 'DECIMAL(10, 2) DEFAULT 0');
+checkAndAddColumn($conn, 'pemesanan', 'waktu_survey', 'TIME');
 
 // Table: pembayaran
 // (Already complete in Create)
