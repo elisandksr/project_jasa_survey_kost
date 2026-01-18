@@ -49,12 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             if (move_uploaded_file($_FILES['bukti']['tmp_name'], $destination)) {
                 // Insert to pembayaran
                 $metode = isset($_POST['metode']) && !empty($_POST['metode']) ? $_POST['metode'] : 'Transfer';
-                // User requirement: Status immediately 'Berhasil' (Validation checked by admin manually)
-                $stmt = $conn->prepare("INSERT INTO pembayaran (id_pemesanan, total_pembayaran, tanggal_pembayaran, bukti_pembayaran, status, metode_pembayaran) VALUES (?, ?, NOW(), ?, 'Berhasil', ?)");
+                // User requirement: Status immediately 'Pending' for Admin Verification
+                $stmt = $conn->prepare("INSERT INTO pembayaran (id_pemesanan, total_pembayaran, tanggal_pembayaran, bukti_pembayaran, status, metode_pembayaran) VALUES (?, ?, NOW(), ?, 'Pending', ?)");
                 $stmt->bind_param("idss", $id_pemesanan, $jumlah, $new_filename, $metode);
                 
                 if ($stmt->execute()) {
-                    // Update Status in Pemesanan if needed, or just rely on Pembayaran status
+                    // Update Status in Pemesanan if needed
                     $success_msg = "Pembayaran sedang dikonfirmasi";
                 } else {
                     $error_msg = "Gagal menyimpan data: " . $stmt->error;
@@ -230,14 +230,18 @@ $stmt_hist->close();
                             // Prepare data for modal
                             // Use updated columns: catatan_tambahan, waktu_survey
                             $catatan = $order['catatan_tambahan'] ?? '';
-                            // Waktu is stored as string "09:00 - 11:00", so display as is.
-                            $waktu   = $order['waktu_survey'] ?? ''; 
+                            
+                            // Format Waktu Survey consistently like Admin (Range 2 Hours)
+                            $waktu_raw = $order['waktu_survey'] ?? '00:00:00';
+                            $start_time = strtotime($waktu_raw);
+                            $end_time = $start_time + (2 * 3600); // 2 hours duration
+                            $waktu_display = date('H.i', $start_time) . ' - ' . date('H.i', $end_time) . ' WIB';
 
                             $modalData = [
                                 'paket' => $order['jenis_layanan'], // from JOIN
                                 'alamat' => $order['alamat_kost'],
                                 'jarak' => $order['jarak_dari_kantor'] . ' km',
-                                'jadwal' => date('d M Y', strtotime($order['jadwal_survey'])) . ($waktu ? ', ' . $waktu : ''),
+                                'jadwal' => date('d M Y', strtotime($order['jadwal_survey'])) . ', ' . $waktu_display,
                                 'wa' => $order['no_wa_klien'] ?? '-',
                                 'harga' => $order['harga'],
                                 'id' => $order['id_pemesanan']
@@ -291,24 +295,14 @@ $stmt_hist->close();
                             <?php echo $text_final; ?>
                         </span>
                         
-                        <?php if ($text_final == 'Ditolak' || $text_final == 'Gagal'): ?>
-                            <div style="margin-top:10px;">
-                                <?php 
-                                    // Re-use calc logic or just pass total
-                                    $modalDataHist = [
-                                        'paket' => $hist['jenis_layanan'],
-                                        'alamat' => $hist['alamat_kost'],
-                                        'jarak' => ($hist['jarak_dari_kantor'] ?? 0) . ' km',
-                                        // Use current time or order time? Order time.
-                                        'jadwal' => date('d M Y', strtotime($hist['jadwal_survey'])), 
-                                        'wa' => $hist['no_wa_klien'] ?? '-',
-                                        'harga' => $hist['harga'],
-                                        'id' => $hist['id_pemesanan']
-                                    ];
-                                ?>
-                                <button class="btn-pay" onclick='openModal(<?php echo json_encode($modalDataHist); ?>)' style="padding:8px 16px; font-size:12px; background:#D32F2F;">Bayar Ulang</button>
-                            </div>
-                        <?php endif; ?>
+                        <?php 
+                        /* 
+                           Disabled Retry Payment Option as per request 
+                           if ($text_final == 'Ditolak' || $text_final == 'Gagal'): 
+                           ... Button Bayar Ulang ...
+                           endif;
+                        */
+                        ?>
                     </div>
                 </div>
                 <?php endforeach; ?>

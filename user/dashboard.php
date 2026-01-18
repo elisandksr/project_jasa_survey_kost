@@ -20,7 +20,7 @@ $stmt->close();
 // Stat: Menunggu Pembayaran (No Payment Uploaded or Rejected)
 $stmt = $conn->prepare("SELECT COUNT(*) as pending FROM pemesanan p 
                         LEFT JOIN pembayaran pay ON p.id_pemesanan = pay.id_pemesanan 
-                        WHERE p.id_klien = ? AND (pay.id_pembayaran IS NULL OR pay.status = 'Invalid')");
+                        WHERE p.id_klien = ? AND (pay.id_pembayaran IS NULL)");
 $stmt->bind_param("i", $id_klien);
 $stmt->execute();
 $total_pending = $stmt->get_result()->fetch_assoc()['pending'];

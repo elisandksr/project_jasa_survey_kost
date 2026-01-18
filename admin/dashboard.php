@@ -14,7 +14,7 @@ $admin_name = $_SESSION['admin_name'] ?? 'Admin';
 $res = $conn->query("SELECT COUNT(*) as total FROM pemesanan");
 $total_orders = $res->fetch_assoc()['total'];
 
-$res = $conn->query("SELECT COUNT(*) as total FROM pembayaran WHERE status = 'Menunggu'");
+$res = $conn->query("SELECT COUNT(*) as total FROM pembayaran WHERE status = 'Pending'");
 $pending_payments = $res->fetch_assoc()['total'];
 
 $res = $conn->query("SELECT COUNT(*) as total FROM hasil_survey");

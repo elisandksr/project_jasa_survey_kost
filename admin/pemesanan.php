@@ -48,7 +48,7 @@ if ($result && $result->num_rows > 0) {
              $status_bg = 'status-danger';
              $action_label = 'Cek Pembayaran';
              $action_target = 'pembayaran.php'; 
-        } elseif ($row['status_bayar'] == 'Menunggu' || $row['status_bayar'] == null) {
+        } elseif ($row['status_bayar'] == 'Menunggu' || $row['status_bayar'] == 'Pending' || $row['status_bayar'] == null) {
             $status_display = 'Menunggu'; 
             $status_bg = 'status-pending';
             $action_label = 'Cek Pembayaran';

@@ -43,10 +43,16 @@ $js_detail_data = [];
 if ($result->num_rows > 0) {
     while($row = $result->fetch_assoc()) {
         
+        // Status mapping to UI
         $status_key = 'Menunggu';
         $status_bg = 'status-pending';
         
-        if ($row['status'] == 'Valid') { 
+        // If status is standard 'Pending' or legacy 'Menunggu', keep as Menunggu
+        if ($row['status'] == 'Pending' || $row['status'] == 'Menunggu') {
+             $status_key = 'Menunggu';
+             $status_bg = 'status-pending';
+        }
+        elseif ($row['status'] == 'Valid') { 
             $status_key = 'Berhasil'; 
             $status_bg = 'status-success'; 
         }
