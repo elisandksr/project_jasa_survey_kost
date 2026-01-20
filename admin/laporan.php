@@ -9,6 +9,155 @@ if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== tru
 
 $admin_name = $_SESSION['admin_name'] ?? 'Admin';
 
+// Handle Report Download Action
+if (isset($_GET['action']) && $_GET['action'] == 'download' && isset($_GET['type'])) {
+    $type = $_GET['type'];
+    
+    // Function to set headers for Excel download
+    function setExcelHeaders($filename) {
+        header("Content-Type: application/vnd.ms-excel");
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+    }
+
+    if ($type == 'clients') {
+        $filename = "Laporan_Data_Klien_" . date('Ymd') . ".xls";
+        setExcelHeaders($filename);
+        
+        echo '<table border="1">';
+        echo '<thead>
+                <tr style="background-color:#f0f0f0;">
+                    <th>ID Klien</th>
+                    <th>Nama Lengkap</th>
+                    <th>Email</th>
+                    <th>No HP (WA)</th>
+                </tr>
+              </thead>';
+        echo '<tbody>';
+        
+        $sql = "SELECT * FROM klien ORDER BY id_klien DESC";
+        $result = $conn->query($sql);
+        
+        if ($result) {
+            while($row = $result->fetch_assoc()) {
+                echo '<tr>';
+                echo '<td>' . $row['id_klien'] . '</td>';
+                echo '<td>' . htmlspecialchars($row['nama_lengkap']) . '</td>';
+                echo '<td>' . htmlspecialchars($row['email']) . '</td>';
+                echo '<td>\'' . htmlspecialchars($row['no_wa']) . '</td>'; 
+                echo '</tr>';
+            }
+        }
+        echo '</tbody></table>';
+        exit();
+
+    } elseif ($type == 'orders') {
+        $filename = "Laporan_Riwayat_Pemesanan_" . date('Ymd') . ".xls";
+        setExcelHeaders($filename);
+        
+        echo '<table border="1">';
+        echo '<thead>
+                <tr style="background-color:#f0f0f0;">
+                    <th>ID Order</th>
+                    <th>Nama Klien</th>
+                    <th>Jadwal Survey</th>
+                    <th>Status Pembayaran</th>
+                    <th>Status Survey</th>
+                    <th>Status Akhir</th>
+                </tr>
+              </thead>';
+        echo '<tbody>';
+        
+        $sql = "SELECT p.id_pemesanan, 
+                       p.jadwal_survey, 
+                       k.nama_lengkap,
+                       pay.status as status_bayar,
+                       h.id_survey
+                FROM pemesanan p 
+                LEFT JOIN klien k ON p.id_klien = k.id_klien 
+                LEFT JOIN pembayaran pay ON p.id_pemesanan = pay.id_pemesanan
+                LEFT JOIN hasil_survey h ON p.id_pemesanan = h.id_pemesanan
+                ORDER BY p.id_pemesanan DESC";
+                
+        $result = $conn->query($sql);
+        
+        if ($result) {
+            while($row = $result->fetch_assoc()) {
+                $status_txt = 'Menunggu';
+                if ($row['id_survey']) {
+                    $status_txt = 'Selesai';
+                } elseif ($row['status_bayar'] == 'Valid') {
+                    $status_txt = 'Diproses';
+                } elseif ($row['status_bayar'] == 'Invalid') {
+                    $status_txt = 'Ditolak';
+                }
+                
+                echo '<tr>';
+                echo '<td>' . $row['id_pemesanan'] . '</td>';
+                echo '<td>' . htmlspecialchars($row['nama_lengkap'] ?? 'User Deleted') . '</td>';
+                echo '<td>' . $row['jadwal_survey'] . '</td>';
+                echo '<td>' . ($row['status_bayar'] ?? 'Belum Bayar') . '</td>';
+                echo '<td>' . ($row['id_survey'] ? 'Sudah Survey' : 'Belum Survey') . '</td>';
+                echo '<td>' . $status_txt . '</td>';
+                echo '</tr>';
+            }
+        }
+        echo '</tbody></table>';
+        exit();
+
+    } elseif ($type == 'revenue') {
+        $filename = "Laporan_Pendapatan_" . date('Ymd') . ".xls";
+        setExcelHeaders($filename);
+        
+        echo '<table border="1">';
+        echo '<thead>
+                <tr style="background-color:#f0f0f0;">
+                    <th>ID Pembayaran</th>
+                    <th>ID Order</th>
+                    <th>Nama Klien</th>
+                    <th>Tanggal Bayar</th>
+                    <th>Metode Pembayaran</th>
+                    <th>Nominal</th>
+                </tr>
+              </thead>';
+        echo '<tbody>';
+        
+        $sql = "SELECT pay.id_pembayaran, pay.id_pemesanan, pay.total_pembayaran, pay.tanggal_pembayaran, pay.metode_pembayaran, k.nama_lengkap 
+                FROM pembayaran pay 
+                JOIN pemesanan p ON pay.id_pemesanan = p.id_pemesanan 
+                JOIN klien k ON p.id_klien = k.id_klien 
+                WHERE pay.status = 'Valid' 
+                ORDER BY pay.tanggal_pembayaran DESC";
+                
+        $result = $conn->query($sql);
+        
+        $total_all = 0;
+        if ($result) {
+            while($row = $result->fetch_assoc()) {
+                $total_all += $row['total_pembayaran'];
+                echo '<tr>';
+                echo '<td>' . $row['id_pembayaran'] . '</td>';
+                echo '<td>' . $row['id_pemesanan'] . '</td>';
+                echo '<td>' . htmlspecialchars($row['nama_lengkap'] ?? 'User Deleted') . '</td>';
+                echo '<td>' . $row['tanggal_pembayaran'] . '</td>';
+                echo '<td>' . htmlspecialchars($row['metode_pembayaran']) . '</td>';
+                echo '<td>' . $row['total_pembayaran'] . '</td>';
+                echo '</tr>';
+            }
+        }
+        
+        echo '<tr style="background-color:#FFFFCC; font-weight:bold;">
+                <td colspan="5" align="right">TOTAL PENDAPATAN</td>
+                <td>' . $total_all . '</td>
+              </tr>';
+              
+        echo '</tbody></table>';
+        exit();
+    }
+}
+
+
 // 1. Total Klien
 $res_klien = $conn->query("SELECT COUNT(*) as total FROM klien");
 $total_klien = $res_klien->fetch_assoc()['total'];
@@ -340,7 +489,7 @@ $stmt_month->close();
                 <div class="table-section" id="print-klien">
                     <div class="table-header-title" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>Laporan Data Klien Terbaru</span>
-                        <button onclick="printSection('print-klien')" class="btn btn-sm btn-action-view">🖨️ Cetak Laporan</button>
+                        <button onclick="printAndDownload('print-klien', 'clients')" class="btn btn-sm btn-action-view">🖨️ Cetak Laporan</button>
                     </div>
                      <div class="table-responsive">
                         <table>
@@ -376,7 +525,7 @@ $stmt_month->close();
                 <div class="table-section" id="print-order">
                     <div class="table-header-title" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>Laporan Riwayat Pemesanan</span>
-                        <button onclick="printSection('print-order')" class="btn btn-sm btn-action-view">🖨️ Cetak Laporan</button>
+                        <button onclick="printAndDownload('print-order', 'orders')" class="btn btn-sm btn-action-view">🖨️ Cetak Laporan</button>
                     </div>
                     <div class="table-responsive">
                         <table>
@@ -416,7 +565,7 @@ $stmt_month->close();
                 <div class="table-section" id="print-revenue">
                     <div class="table-header-title" style="display: flex; justify-content: space-between; align-items: center;">
                         <span>Laporan Pendapatan </span>
-                        <button onclick="printSection('print-revenue')" class="btn btn-sm btn-action-view">🖨️ Cetak Laporan</button>
+                        <button onclick="printAndDownload('print-revenue', 'revenue')" class="btn btn-sm btn-action-view">🖨️ Cetak Laporan</button>
                     </div>
                     <div class="table-responsive">
                         <table>
@@ -491,6 +640,16 @@ $stmt_month->close();
                     btn.classList.add('active');
                 }
             });
+        }
+
+        function printAndDownload(divId, downloadType) {
+            // 1. Trigger Download
+            window.location.href = 'laporan.php?action=download&type=' + downloadType;
+            
+            // 2. Open Print Preview (Small delay to ensure download starts first without interrupting flow)
+            setTimeout(function() {
+                printSection(divId);
+            }, 500);
         }
 
         function printSection(divId) {
